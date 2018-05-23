@@ -32,7 +32,6 @@ public class CSVHandler {
 
     public static void main(String[] args)
     {
-
         CSVHandler csvHandler = new CSVHandler();
         CSVReader deliveryReader = csvHandler.readCSV(true, "deliveryTime_ist2.csv");
         CSVReader distanceReader = csvHandler.readCSV(false, "distanceMatrix_ist2.csv");
@@ -44,14 +43,20 @@ public class CSVHandler {
             lineDistance = distanceReader.readNext();
             System.out.println(lineDelivery.length);
 
+            int j=0;
+            int k=0;
             while ((lineDelivery = deliveryReader.readNext()) != null) {
-                System.out.println("Del "+lineDelivery[1]); //[id= " + line[0] + ", code= " + line[1] + " , name=" + line[2] + "]");
+                j++;
+                System.out.println("Del "+j+":"+lineDelivery[1]); //[id= " + line[0] + ", code= " + line[1] + " , name=" + line[2] + "]");
             }
             System.out.println("DISTANCE:\n");
             System.out.println(lineDistance.length);
+
             while ((lineDistance = distanceReader.readNext()) != null) {
-                System.out.println("Dist "+lineDistance[239]); //[id= " + line[0] + ", code= " + line[1] + " , name=" + line[2] + "]");
+                k++;
+                System.out.println("Dist "+k+":"+lineDistance[1]); //[id= " + line[0] + ", code= " + line[1] + " , name=" + line[2] + "]");
             }
+            System.out.println(distanceReader.getLinesRead());
         }catch (IOException e) {
             e.printStackTrace();
         }
