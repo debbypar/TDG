@@ -3,9 +3,11 @@ package com.debora.partigianoni;
 import com.debora.partigianoni.controller.DeliveryTimeController;
 import com.debora.partigianoni.model.AdjMatrix;
 import com.debora.partigianoni.model.DeliveryTime;
+import com.debora.partigianoni.model.DirectedEdge;
 import com.debora.partigianoni.model.DistanceMatrix;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -44,18 +46,110 @@ public class MainAlgorithm {
         for(int i=0; i<t_ist.length; i++)
             t_ist[i] = 0;
 
+        this.deliveryTime = new DeliveryTime(deliveryFile);
+
+    }
+
+    public Minimum edgeWithMinWeight(DirectedEdge[] arr, List<Integer> kSmallest)
+    {
+        Minimum min = new Minimum();
+        int index = 0;
+        DirectedEdge minEdge = arr[kSmallest.get(0)];
+        for (int i = 1; i < kSmallest.size(); i++) {
+            if (arr[kSmallest.get(i)].weight() < minEdge.weight()) {
+                minEdge = arr[kSmallest.get(i)];
+                index = i;
+            }
+        }
+        min.setMin(minEdge);
+        min.setIndexInSmallest(index);
+        return min;
+    }
+
+    public class Minimum{
+        DirectedEdge min;
+        int indexInSmallest;
+
+        public Minimum(){
+            //this.min = new DirectedEdge();
+            this.indexInSmallest = 0;
+        }
+
+        public DirectedEdge getMin() {
+            return min;
+        }
+
+        public void setMin(DirectedEdge min) {
+            this.min = min;
+        }
+
+        public int getIndexInSmallest() {
+            return indexInSmallest;
+        }
+
+        public void setIndexInSmallest(int indexInSmallest) {
+            this.indexInSmallest = indexInSmallest;
+        }
     }
 
     public void firstDelivery()
     {
-        int i;
-        for(i=0; i<M; i++)
+        int i, j;
+        int posFirstMover = this.distanceMatrix.getPosFirstMover();
+        System.out.println(this.distanceMatrix);
+        DirectedEdge[] tempDist;
+        Minimum minimum = null ;
+        List<Integer> tempKSmall;
+        boolean foundNext;
+
+        for(i=posFirstMover; i<posFirstMover+M; i++)
         {
+            foundNext = false;
+            tempKSmall = DeliveryTimeController.selectKthIndex(deliveryTime.getTime(), M);//this.kSmallestDelT;
+
+            System.out.println(this.kSmallestDelT.size());
+            System.out.println("--------------"+i+"--------------");
+            while(!foundNext)
+            {
+                tempDist = distanceMatrix.getAdj()[i];
+                int size = tempKSmall.size();
+                for(j = 0; j< size; j++)
+                {
+                //    System.out.println("("+i+", "+tempKSmall.get(j)+"): "+tempDist[tempKSmall.get(j)].weight());
+                    minimum = this.edgeWithMinWeight(tempDist, tempKSmall);
+                }
+                if(distanceMatrix.getAdj()[i][minimum.getMin().to()].weight() > (deliveryTime.getTime().get(minimum.getMin().to())+12))
+                {
+//                    System.out.println("PRIMA: "+tempKSmall.size());
+                    if(tempKSmall.size() > 0)
+                        tempKSmall.remove(minimum.getIndexInSmallest());
+                    else{
+                        System.out.println("-------------ERRORE-------------");
+                        System.out.println("Prendere qualche altro tempo di delivery per la prima fase perché per un certo mover non va bene nessuno!");
+                        System.out.println("-------------ERRORE-------------");
+                    }
+//                    System.out.println("DOPO: "+tempKSmall.size());
+                    continue;
+                }
+                else
+                {
+                    System.out.println("£££  "+minimum.getMin().to());
+                    System.out.println(deliveryTime.getTime().get(minimum.getMin().to()));
+                    double sum = deliveryTime.getTime().get(minimum.getMin().to()) +12;
+                    System.out.println(distanceMatrix.getAdj()[i][minimum.getMin().to()].weight()+" > "+sum+" ??? NO!!!");
+                }
+                foundNext = true;
+            }
 
         }
-       System.out.println(this.kSmallestDelT);
-       System.out.println(this.distanceMatrix);
-       System.out.println(this.distanceMatrix.getPosFirstMover());
+
+        System.out.println(this.kSmallestDelT);
+     //   System.out.println("---------------------");
+     //   System.out.println(this.distanceMatrix);
+        System.out.println(this.deliveryTime.getTime());
+
+     //   System.out.println("---------------------");
+      // System.out.println(this.minWeight(temp));
 
     }
 
