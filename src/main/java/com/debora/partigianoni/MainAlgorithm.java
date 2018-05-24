@@ -6,10 +6,7 @@ import com.debora.partigianoni.model.DeliveryTime;
 import com.debora.partigianoni.model.DirectedEdge;
 import com.debora.partigianoni.model.DistanceMatrix;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class MainAlgorithm {
     private double[] t_ist;     //tempo istantaneo del mover
@@ -20,10 +17,10 @@ public class MainAlgorithm {
     private DistanceMatrix distanceMatrix;
     private DeliveryTime deliveryTime;
     private double[] X;    //istanti di completamento degli ordini
-    private boolean[] z1;
-    private boolean[] z2;
-    private boolean[] z3;
-    private boolean[] w;
+    private int[] z1;
+    private int[] z2;
+    private int[] z3;
+    private int[] w;
     private AdjMatrix adjMatrix;
     private int counterMovers;
     private int counterDelivery;
@@ -38,15 +35,24 @@ public class MainAlgorithm {
         this.deliveryTime = new DeliveryTime(deliveryFile);
         this.distanceMatrix = new DistanceMatrix(distanceFile, vertices);
         this.adjMatrix = new AdjMatrix(V);
-        this.z1 = new boolean[V-M];
-        this.z2 = new boolean[V-M];
-        this.z3 = new boolean[V-M];
-        this.w = new boolean[V-M];
+        this.z1 = new int[V-M];
+        this.z2 = new int[V-M];
+        this.z3 = new int[V-M];
+        this.w = new int[V-M];
         this.t_ist = new double[M];
         this.pos_ist = new double[M];
         this.counterDelivery = 0;
         this.counterMovers = 0;
         this.moverEnd = new boolean[M];
+
+        int j;
+        for(j=0; j<V-M; j++)
+        {
+            w[j] = 0;
+            z1[j] = 0;
+            z2[j] = 0;
+            z3[j] = 0;
+        }
 
         for (int i=0; i<M; i++)
         {
@@ -109,7 +115,7 @@ public class MainAlgorithm {
     {
         int i, j;
         int posFirstMover = this.distanceMatrix.getPosFirstMover();
-     //   System.out.println(this.distanceMatrix);
+//        System.out.println(this.distanceMatrix);
         DirectedEdge[] tempDist;
         Minimum minimum = null ;
         List<Integer> tempKSmall;
@@ -128,12 +134,8 @@ public class MainAlgorithm {
             while(!foundNext)
             {
                 tempDist = distanceMatrix.getAdj()[i];
-                int size = tempKSmall.size();
-                for(j = 0; j< size; j++)
-                {
-                //    System.out.println("("+i+", "+tempKSmall.get(j)+"): "+tempDist[tempKSmall.get(j)].weight());
-                    minimum = this.edgeWithMinWeight(tempDist, tempKSmall);
-                }
+                minimum = this.edgeWithMinWeight(tempDist, tempKSmall);     //prendo il j con peso minimo tra quelli dei delivery time ordinati
+
                 if(distanceMatrix.getAdj()[i][minimum.getMin().to()].weight() > (deliveryTime.getTime().get(minimum.getMin().to())+12))
                 {
                     if(tempKSmall.size() > 0)
@@ -150,16 +152,58 @@ public class MainAlgorithm {
                     System.out.println("Min weight for "+minimum.getMin().to()+". Expected time: "+deliveryTime.getTime().get(minimum.getMin().to()));
                     double sum = deliveryTime.getTime().get(minimum.getMin().to()) +12;
                     System.out.println(distanceMatrix.getAdj()[i][minimum.getMin().to()].weight()+" > "+sum+" ??? NO!!!");
+                    if(distanceMatrix.getAdj()[i][minimum.getMin().to()].weight() <= (deliveryTime.getTime().get(minimum.getMin().to())-3))
+                    {
+                        double time = deliveryTime.getTime().get(minimum.getMin().to())-3;
+                        System.out.println("Tempo successivo:::::: "+time+"....attuale: "+t_ist[i-posFirstMover]);
+                        t_ist[i-posFirstMover] += (deliveryTime.getTime().get(minimum.getMin().to())-3);
+                        foundNext = true;
+                        counterDelivery++;
+                    }
+                    else if(distanceMatrix.getAdj()[i][minimum.getMin().to()].weight() <= (deliveryTime.getTime().get(minimum.getMin().to())+3))
+                    {
+                        t_ist[i-posFirstMover] += distanceMatrix.getAdj()[i][minimum.getMin().to()].weight();
+                        foundNext = true;
+                        counterDelivery++;
+                    }
+                    else if(distanceMatrix.getAdj()[i][minimum.getMin().to()].weight() <= (deliveryTime.getTime().get(minimum.getMin().to())+6))
+                    {
+                        t_ist[i-posFirstMover] += distanceMatrix.getAdj()[i][minimum.getMin().to()].weight();
+                        z1[minimum.getMin().to()] = 1;
+                        foundNext = true;
+                        counterDelivery++;
+                    }
+                    else if(distanceMatrix.getAdj()[i][minimum.getMin().to()].weight() <= (deliveryTime.getTime().get(minimum.getMin().to())+9))
+                    {
+                        t_ist[i-posFirstMover] += distanceMatrix.getAdj()[i][minimum.getMin().to()].weight();
+                        z2[minimum.getMin().to()] = 1;
+                        foundNext = true;
+                        counterDelivery++;
+                    }
+                    else if(distanceMatrix.getAdj()[i][minimum.getMin().to()].weight() <= (deliveryTime.getTime().get(minimum.getMin().to())+12))
+                    {
+                        t_ist[i-posFirstMover] += distanceMatrix.getAdj()[i][minimum.getMin().to()].weight();
+                        z3[minimum.getMin().to()] = 1;
+                        foundNext = true;
+                        counterDelivery++;
+                    }
                 }
-                foundNext = true;
+            //    foundNext = true;
             }
 
         }
 
-        System.out.println(this.kSmallestDelT);
-        System.out.println("---------------------");
+   /*     System.out.println("*********************");
+        System.out.println(Arrays.toString(t_ist));
+        System.out.println(Arrays.toString(w));
+        System.out.println(Arrays.toString(z1));
+        System.out.println(Arrays.toString(z2));
+        System.out.println(Arrays.toString(z3));*/
+
+     //   System.out.println("---------------------");
+     //   System.out.println(this.kSmallestDelT);
      //   System.out.println(this.distanceMatrix);
-        System.out.println(this.deliveryTime.getTime());
+     //   System.out.println(this.deliveryTime.getTime());
 
      //   System.out.println("---------------------");
       // System.out.println(this.minWeight(temp));
@@ -169,7 +213,12 @@ public class MainAlgorithm {
     public static void main(String args[])
     {
         MainAlgorithm algorithm = new MainAlgorithm(36, 275, "deliveryTime_ist2.csv", "distanceMatrix_ist2.csv");
+        long startTime = System.nanoTime();
         algorithm.firstDelivery("deliveryTime_ist2.csv");
+        long endTime = System.nanoTime();
+
+        long duration = (endTime - startTime);
+        System.out.println(duration);
     }
 }
 
