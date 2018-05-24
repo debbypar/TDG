@@ -57,11 +57,17 @@ public class DistanceMatrix {
         return this.posFirstMover;
     }
 
-    public DistanceMatrix(String file)
+    /**
+     *
+     * @param file
+     * @param V     Numero di vertici totale (compresi i mover)
+     */
+    public DistanceMatrix(String file, int V)
     {
      //   this.V = 0;
-     //   this.E = 0;
-        this.adj = new DirectedEdge[300][300];
+        this.E = 0;
+        this.V = V;
+        this.adj = new DirectedEdge[V][V];
 
         CSVHandler csvHandler = new CSVHandler();
         CSVReader distanceReader = csvHandler.readCSV(false, file);
@@ -73,79 +79,22 @@ public class DistanceMatrix {
             int j;
             while ( (lineDistance = distanceReader.readNext()) != null)
             {
-                System.out.println("kkkkkkkkk  "+lineDistance[0]);
+             //   System.out.println("kkkkkkkkk  "+lineDistance[0]);
                 if(lineDistance[0].equals("M1"))
                 {
                     setPosFirstMover(k);
                     System.out.println("TROVATOOOOOOOOOOOOO!!!!!!!!!!!!!!!\n"+"----->"+k);
                 }
                 for(j=1; j<lineDistance.length; j++){
-                    System.out.println("("+k+", "+(j-1)+") --> "+lineDistance[j]);
+                 //   System.out.println("("+k+", "+(j-1)+") --> "+lineDistance[j]);
                     //    if(k != (j-1))
                     //todo prima di fare addEdge, modificare dimensione array adj
                     addEdge(new DirectedEdge(k, (j-1), Double.parseDouble(lineDistance[j])));
                 }
                 k++;
             }
-            System.out.println("ppppppppppppp   "+k);
-            this.V = k;
         }catch (IOException e) {
             e.printStackTrace();
-        }
-    }
-
-/*    public DistanceMatrix createDistMatrixDelivery(String file)
-    {
-        CSVHandler csvHandler = new CSVHandler();
-        CSVReader distanceReader = csvHandler.readCSV(false, file);
-        String[] lineDistance;
-
-        DistanceMatrix distanceFromDelivery = new DistanceMatrix("distanceMatrix_ist2.csv");
-
-        int k=0;
-        try {
-            lineDistance = distanceReader.readNext();
-            int j;
-            while ( (lineDistance = distanceReader.readNext()) != null)
-            {
-                System.out.println("kkkkkkkkk  "+lineDistance[0]);
-                if(lineDistance[0].equals("M1"))
-                {
-                    System.out.println("TROVATOOOOOOOOOOOOO!!!!!!!!!!!!!!!\n"+"----->"+k);
-                }
-                for(j=1; j<lineDistance.length; j++){
-                    System.out.println("("+k+", "+(j-1)+") --> "+lineDistance[j]);
-                //    if(k != (j-1))
-                    //todo prima di fare addEdge, modificare dimensione array adj
-                        distanceFromDelivery.addEdge(new DirectedEdge(k, (j-1), Double.parseDouble(lineDistance[j])));
-                }
-                k++;
-            }
-        }catch (IOException e) {
-            e.printStackTrace();
-        }
-        return distanceFromDelivery;
-    }*/
-
-    /**
-     * Initializes a random edge-weighted digraph with {@code V} vertices and <em>E</em> edges.
-     * @param V the number of vertices
-     * @param E the number of edges
-     * @throws IllegalArgumentException if {@code V < 0}
-     * @throws IllegalArgumentException if {@code E < 0}
-     */
-    public DistanceMatrix(int V, int E) {
-        this(V);
-        if (E < 0) throw new IllegalArgumentException("number of edges must be nonnegative");
-        if (E > V*V) throw new IllegalArgumentException("too many edges");
-
-        // can be inefficient
-        while (this.E != E) {
-            int v = StdRandom.uniform(V);
-            int w = StdRandom.uniform(V);
-            double weight = Math.round(100 * StdRandom.uniform()) / 100.0;
-            System.out.println("*********** "+weight);
-            addEdge(new DirectedEdge(v, w, weight));
         }
     }
 
@@ -173,17 +122,15 @@ public class DistanceMatrix {
     public void addEdge(DirectedEdge e) {
         int v = e.from();
         int w = e.to();
-      //  validateVertex(v);
-      //  validateVertex(w);
+        validateVertex(v);
+        validateVertex(w);
      //   System.out.println("V... "+v+" W... "+w);
-     //   System.out.println("adj[v][w]: "+adj[v][w]);
+  //      System.out.println("adj[v][w]: "+adj[v][w]);
         if (adj[v][w] == null) {
         //    System.out.println("E' null!!!");
             E++;
             adj[v][w] = e;
         }
-        else
-          System.out.println("Aggiunto arco");
     }
 
     /**
@@ -273,13 +220,11 @@ public class DistanceMatrix {
     public static void main(String[] args) {
        // int V = Integer.parseInt(args[0]);
        // int E = Integer.parseInt(args[1]);
-    //    DistanceMatrix G = DistanceMatrix.createDistMatrixDelivery("distanceMatrix_ist2.csv");
-        DistanceMatrix G = new DistanceMatrix("distanceMatrix_ist2.csv");
-        //StdOut.println(G);
+        DistanceMatrix G = new DistanceMatrix("distanceMatrix_ist2.csv", 275);
         int k,z;
-        for(k=0; k<G.adj().length; k++)
-            for (z=0; z<G.adj().length; z++)
-                if(G.adj[k][z] != null && k==3)
+     /*   for(k=0; k<275; k++)
+            for (z=0; z<(275-36); z++)
+                if(G.adj[k][z] != null)
                     System.out.println("...."+G.adj[k][z].weight());
 
         int y=0;
@@ -288,7 +233,9 @@ public class DistanceMatrix {
             DirectedEdge obj = (DirectedEdge)iterator.next();
             System.out.println("+++ "+y+": " + obj);
             y++;
-        }
+        }*/
+        System.out.println(G);
+        System.out.println(G.getPosFirstMover());
     }
 
 }
