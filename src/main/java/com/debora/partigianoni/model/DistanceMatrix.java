@@ -87,12 +87,11 @@ public class DistanceMatrix {
                 if(lineDistance[0].equals("M1"))
                 {
                     setPosFirstMover(k);
-                    System.out.println("TROVATOOOOOOOOOOOOO!!!!!!!!!!!!!!!\n"+"----->"+k);
+              //      System.out.println("TROVATOOOOOOOOOOOOO!!!!!!!!!!!!!!!\n"+"----->"+k);
                 }
                 for(j=1; j<lineDistance.length; j++){
                  //   System.out.println("("+k+", "+(j-1)+") --> "+lineDistance[j]);
                     //    if(k != (j-1))
-                    //todo prima di fare addEdge, modificare dimensione array adj
                     addEdge(new DirectedEdge(k, (j-1), Double.parseDouble(lineDistance[j])));
                 }
                 k++;
@@ -226,7 +225,7 @@ public class DistanceMatrix {
        // int E = Integer.parseInt(args[1]);
         DistanceMatrix G = new DistanceMatrix("distanceMatrix_ist2.csv", 275);
         int k,z;
-        for(k=0; k<275; k++)
+     /*   for(k=0; k<275; k++)
             for (z=0; z<(275-36); z++)
                 if(G.adj[k][z] != null)
                     System.out.println("...."+G.adj[k][z].weight());
@@ -237,9 +236,9 @@ public class DistanceMatrix {
             DirectedEdge obj = (DirectedEdge)iterator.next();
             System.out.println("+++ "+y+": " + obj);
             y++;
-        }
-        System.out.println(G);
-        System.out.println(G.getPosFirstMover());
+        }*/
+     //   System.out.println(G);
+     //   System.out.println(G.getPosFirstMover());
     }
 
 }

@@ -30,7 +30,7 @@ public class DeliveryTime {
         }catch (IOException e) {
             e.printStackTrace();
         }
-        System.out.println("LUNGHEZZA: "+time.size());
+    //    System.out.println("LUNGHEZZA: "+time.size());
         this.time = time;
     }
 

@@ -12,7 +12,8 @@ import java.util.List;
 import java.util.Map;
 
 public class MainAlgorithm {
-    private double[] t_ist;
+    private double[] t_ist;     //tempo istantaneo del mover
+    private double[] pos_ist;   //posizione istantanea del mover
     private List<Integer> kSmallestDelT;
     private int M;  //numero di mover
     private int V;  //Numero di vertici (compreso il numero di movers)
@@ -24,7 +25,9 @@ public class MainAlgorithm {
     private boolean[] z3;
     private boolean[] w;
     private AdjMatrix adjMatrix;
-
+    private int counterMovers;
+    private int counterDelivery;
+    private boolean[] moverEnd;
 
 
 
@@ -40,6 +43,16 @@ public class MainAlgorithm {
         this.z3 = new boolean[V-M];
         this.w = new boolean[V-M];
         this.t_ist = new double[M];
+        this.pos_ist = new double[M];
+        this.counterDelivery = 0;
+        this.counterMovers = 0;
+        this.moverEnd = new boolean[M];
+
+        for (int i=0; i<M; i++)
+        {
+            this.moverEnd[i] = false;
+        }
+
 
         this.kSmallestDelT = DeliveryTimeController.selectKthIndex(deliveryTime.getTime(), M);
 
@@ -92,22 +105,25 @@ public class MainAlgorithm {
         }
     }
 
-    public void firstDelivery()
+    public void firstDelivery(String deliveryFile)
     {
         int i, j;
         int posFirstMover = this.distanceMatrix.getPosFirstMover();
-        System.out.println(this.distanceMatrix);
+     //   System.out.println(this.distanceMatrix);
         DirectedEdge[] tempDist;
         Minimum minimum = null ;
         List<Integer> tempKSmall;
         boolean foundNext;
 
+    //    System.out.println("++++++++++++");
+    //    System.out.println(deliveryTime.getTime());
+
         for(i=posFirstMover; i<posFirstMover+M; i++)
         {
             foundNext = false;
             tempKSmall = DeliveryTimeController.selectKthIndex(deliveryTime.getTime(), M);//this.kSmallestDelT;
-
-            System.out.println(this.kSmallestDelT.size());
+            this.deliveryTime = new DeliveryTime(deliveryFile);         //todo Trovare modo per evitare questa cosa che rallenta.
+           // System.out.println(this.kSmallestDelT.size());
             System.out.println("--------------"+i+"--------------");
             while(!foundNext)
             {
@@ -120,7 +136,6 @@ public class MainAlgorithm {
                 }
                 if(distanceMatrix.getAdj()[i][minimum.getMin().to()].weight() > (deliveryTime.getTime().get(minimum.getMin().to())+12))
                 {
-//                    System.out.println("PRIMA: "+tempKSmall.size());
                     if(tempKSmall.size() > 0)
                         tempKSmall.remove(minimum.getIndexInSmallest());
                     else{
@@ -128,13 +143,11 @@ public class MainAlgorithm {
                         System.out.println("Prendere qualche altro tempo di delivery per la prima fase perché per un certo mover non va bene nessuno!");
                         System.out.println("-------------ERRORE-------------");
                     }
-//                    System.out.println("DOPO: "+tempKSmall.size());
                     continue;
                 }
                 else
                 {
-                    System.out.println("£££  "+minimum.getMin().to());
-                    System.out.println(deliveryTime.getTime().get(minimum.getMin().to()));
+                    System.out.println("Min weight for "+minimum.getMin().to()+". Expected time: "+deliveryTime.getTime().get(minimum.getMin().to()));
                     double sum = deliveryTime.getTime().get(minimum.getMin().to()) +12;
                     System.out.println(distanceMatrix.getAdj()[i][minimum.getMin().to()].weight()+" > "+sum+" ??? NO!!!");
                 }
@@ -144,7 +157,7 @@ public class MainAlgorithm {
         }
 
         System.out.println(this.kSmallestDelT);
-     //   System.out.println("---------------------");
+        System.out.println("---------------------");
      //   System.out.println(this.distanceMatrix);
         System.out.println(this.deliveryTime.getTime());
 
@@ -156,7 +169,7 @@ public class MainAlgorithm {
     public static void main(String args[])
     {
         MainAlgorithm algorithm = new MainAlgorithm(36, 275, "deliveryTime_ist2.csv", "distanceMatrix_ist2.csv");
-        algorithm.firstDelivery();
+        algorithm.firstDelivery("deliveryTime_ist2.csv");
     }
 }
 

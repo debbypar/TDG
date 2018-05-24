@@ -37,7 +37,7 @@ public class CSVHandler {
         CSVReader distanceReader = csvHandler.readCSV(false, "distanceMatrix_ist2.csv");
         String[] lineDelivery;
         String[] lineDistance;
-        System.out.println("DELIVERY:\n");
+     //   System.out.println("DELIVERY:\n");
         try{
             lineDelivery = deliveryReader.readNext();
             lineDistance = distanceReader.readNext();
@@ -49,14 +49,14 @@ public class CSVHandler {
                 j++;
                 System.out.println("Del "+j+":"+lineDelivery[1]); //[id= " + line[0] + ", code= " + line[1] + " , name=" + line[2] + "]");
             }
-            System.out.println("DISTANCE:\n");
-            System.out.println(lineDistance.length);
+       //     System.out.println("DISTANCE:\n");
+       //     System.out.println(lineDistance.length);
 
             while ((lineDistance = distanceReader.readNext()) != null) {
                 k++;
-                System.out.println("Dist "+k+":"+lineDistance[1]); //[id= " + line[0] + ", code= " + line[1] + " , name=" + line[2] + "]");
+          //      System.out.println("Dist "+k+":"+lineDistance[1]); //[id= " + line[0] + ", code= " + line[1] + " , name=" + line[2] + "]");
             }
-            System.out.println(distanceReader.getLinesRead());
+        //    System.out.println(distanceReader.getLinesRead());
         }catch (IOException e) {
             e.printStackTrace();
         }
@@ -115,6 +115,6 @@ public class CSVHandler {
             e.printStackTrace();
         }*/
 
-        System.out.println("Ciaoooooo");
+     //   System.out.println("Ciaoooooo");
     }
 }
