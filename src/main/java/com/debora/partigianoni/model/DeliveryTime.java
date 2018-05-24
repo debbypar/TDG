@@ -34,6 +34,10 @@ public class DeliveryTime {
         this.time = time;
     }
 
+    public ArrayList<Double> getTime() {
+        return time;
+    }
+
     public void printDelTimes()
     {
         for(int i=0; i< time.size(); i++)

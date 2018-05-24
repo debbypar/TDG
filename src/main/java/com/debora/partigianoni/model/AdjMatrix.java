@@ -1,5 +1,5 @@
 /******************************************************************************
- *  Compilation:  javac AdjMatrixDigraph.java
+ *  Compilation:  javac AdjMatrix.java
  *  Execution:    java AdjMatrixGraph V E
  *  Dependencies: StdOut.java
  *
@@ -10,20 +10,27 @@
 
 package com.debora.partigianoni.model;
 
-import java.util.Random;
-
+/******************************************************************************
+ *  Compilation:  javac AdjMatrix.java
+ *  Execution:    java AdjMatrix V E
+ *  Dependencies: StdOut.java
+ *
+ *  A digraph, implemented using an adjacency matrix.
+ *  Parallel edges are disallowed; self-loops are allowd.
+ *
+ ******************************************************************************/
 
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 
 
-public class AdjMatrixDigraph {
+public class AdjMatrix {
     private int V;
     private int E;
     private boolean[][] adj;
 
     // empty graph with V vertices
-    public AdjMatrixDigraph(int V) {
+    public AdjMatrix(int V) {
         if (V < 0) throw new RuntimeException("Number of vertices must be nonnegative");
         this.V = V;
         this.E = 0;
@@ -31,17 +38,15 @@ public class AdjMatrixDigraph {
     }
 
     // random graph with V vertices and E edges
-    public AdjMatrixDigraph(int V, int E) {
+    public AdjMatrix(int V, int E) {
         this(V);
         if (E < 0) throw new RuntimeException("Number of edges must be nonnegative");
         if (E > V*V) throw new RuntimeException("Too many edges");
 
-        //todo modificare dentro il while con "fino a quando non finiscono gli archi nel file"
         // can be inefficient
         while (this.E != E) {
             int v = StdRandom.uniform(V);
             int w = StdRandom.uniform(V);
-            System.out.println("v: "+v+", w: "+w);
             addEdge(v, w);
         }
     }
@@ -114,7 +119,7 @@ public class AdjMatrixDigraph {
     public static void main(String[] args) {
         int V = Integer.parseInt(args[0]);
         int E = Integer.parseInt(args[1]);
-        AdjMatrixDigraph G = new AdjMatrixDigraph(V, E);
+        AdjMatrix G = new AdjMatrix(V);
         StdOut.println(G);
     }
 
