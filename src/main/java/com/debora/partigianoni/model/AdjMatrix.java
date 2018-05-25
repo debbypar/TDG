@@ -27,14 +27,22 @@ import java.util.NoSuchElementException;
 public class AdjMatrix {
     private int V;
     private int E;
-    private boolean[][] adj;
+    private Integer[][] adj;
+
+    public Integer[][] getAdj() {
+        return adj;
+    }
+
+    public void setAdj(Integer[][] adj) {
+        this.adj = adj;
+    }
 
     // empty graph with V vertices
     public AdjMatrix(int V) {
         if (V < 0) throw new RuntimeException("Number of vertices must be nonnegative");
         this.V = V;
         this.E = 0;
-        this.adj = new boolean[V][V];
+        this.adj = new Integer[V][V];
     }
 
     // random graph with V vertices and E edges
@@ -58,8 +66,8 @@ public class AdjMatrix {
 
     // add directed edge v->w
     public void addEdge(int v, int w) {
-        if (!adj[v][w]) E++;
-        adj[v][w] = true;
+        if (adj[v][w]==0) E++;
+        adj[v][w] = 1;
     }
 
     // return list of neighbors of v
@@ -82,7 +90,7 @@ public class AdjMatrix {
 
         public boolean hasNext() {
             while (w < V) {
-                if (adj[v][w]) return true;
+                if (adj[v][w] != null) return true;
                 w++;
             }
             return false;

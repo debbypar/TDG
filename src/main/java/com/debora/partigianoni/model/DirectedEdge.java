@@ -3,7 +3,7 @@ package com.debora.partigianoni.model;
 public class DirectedEdge {
     private final int v;
     private final int w;
-    private final double weight;
+    private double weight;
 
     /**
      * Initializes a directed edge from vertex {@code v} to vertex {@code w} with
@@ -44,8 +44,12 @@ public class DirectedEdge {
      * Returns the weight of the directed edge.
      * @return the weight of the directed edge
      */
-    public double weight() {
+    public double getWeight() {
         return weight;
+    }
+
+    public void setWeight(double weight) {
+        this.weight = weight;
     }
 
     /**

@@ -195,7 +195,7 @@ public class AdjMatrixEdgeWeightedDigraph {
         for(k=0; k<G.adj().length; k++)
             for (z=0; z<G.adj().length; z++)
                 if(G.adj[k][z] != null && k==3)
-                    System.out.println("...."+G.adj[k][z].weight());
+                    System.out.println("...."+G.adj[k][z].getWeight());
 
         int y=0;
         Iterator iterator = G.adj(2).iterator();

@@ -5,6 +5,8 @@ import com.debora.partigianoni.model.AdjMatrix;
 import com.debora.partigianoni.model.DeliveryTime;
 import com.debora.partigianoni.model.DirectedEdge;
 import com.debora.partigianoni.model.DistanceMatrix;
+import org.jcp.xml.dsig.internal.dom.DOMBase64Transform;
+import org.omg.PortableInterceptor.SYSTEM_EXCEPTION;
 
 import java.util.*;
 
@@ -54,19 +56,29 @@ public class MainAlgorithm {
             z3[j] = 0;
         }
 
-        for (int i=0; i<M; i++)
+        int i;
+        for (i=0; i<M; i++)
         {
             this.moverEnd[i] = false;
         }
 
+        for(i=0; i<V; i++)
+        {
+            for (j=0; j<(V-M); j++)
+            {
+                this.adjMatrix.getAdj()[i][j] = 0;
+          //      System.out.println("("+i+", "+j+")----->"+adjMatrix.getAdj()[i][j]);
+            }
+        }
 
         this.kSmallestDelT = DeliveryTimeController.selectKthIndex(deliveryTime.getTime(), M);
 
-        for(int i=0; i<t_ist.length; i++)
+        for(i=0; i<t_ist.length; i++)
             t_ist[i] = 0;
 
         this.deliveryTime = new DeliveryTime(deliveryFile);
-
+ //       System.out.println("%%%%%%%%%%%%%%%%%");
+//        System.out.println(adjMatrix.getAdj());
     }
 
     public Minimum edgeWithMinWeight(DirectedEdge[] arr, List<Integer> kSmallest)
@@ -75,7 +87,7 @@ public class MainAlgorithm {
         int index = 0;
         DirectedEdge minEdge = arr[kSmallest.get(0)];
         for (int i = 1; i < kSmallest.size(); i++) {
-            if (arr[kSmallest.get(i)].weight() < minEdge.weight()) {
+            if (arr[kSmallest.get(i)].getWeight() < minEdge.getWeight()) {
                 minEdge = arr[kSmallest.get(i)];
                 index = i;
             }
@@ -123,90 +135,109 @@ public class MainAlgorithm {
 
     //    System.out.println("++++++++++++");
     //    System.out.println(deliveryTime.getTime());
+        tempKSmall = DeliveryTimeController.selectKthIndex(deliveryTime.getTime(), M);//this.kSmallestDelT;
 
+      /*  System.out.println("%%%%%%%%%%%%%%%%%");
+        System.out.println(this.adjMatrix);
+        System.out.println("%%%%%%%%%%%%%%%%%");*/
         for(i=posFirstMover; i<posFirstMover+M; i++)
         {
             foundNext = false;
-            tempKSmall = DeliveryTimeController.selectKthIndex(deliveryTime.getTime(), M);//this.kSmallestDelT;
             this.deliveryTime = new DeliveryTime(deliveryFile);         //todo Trovare modo per evitare questa cosa che rallenta.
-           // System.out.println(this.kSmallestDelT.size());
+            System.out.println("++++++++++"+tempKSmall.size());
             System.out.println("--------------"+i+"--------------");
             while(!foundNext)
             {
                 tempDist = distanceMatrix.getAdj()[i];
                 minimum = this.edgeWithMinWeight(tempDist, tempKSmall);     //prendo il j con peso minimo tra quelli dei delivery time ordinati
 
-                if(distanceMatrix.getAdj()[i][minimum.getMin().to()].weight() > (deliveryTime.getTime().get(minimum.getMin().to())+12))
+                if(distanceMatrix.getAdj()[i][minimum.getMin().to()].getWeight() > (deliveryTime.getTime().get(minimum.getMin().to())+12))
                 {
-                    if(tempKSmall.size() > 0)
+                 /*   if(tempKSmall.size() > 0)
                         tempKSmall.remove(minimum.getIndexInSmallest());
                     else{
                         System.out.println("-------------ERRORE-------------");
                         System.out.println("Prendere qualche altro tempo di delivery per la prima fase perché per un certo mover non va bene nessuno!");
                         System.out.println("-------------ERRORE-------------");
-                    }
+                    }*/
+                 //todo in tal caso per rimuovere servirebbe un tempKSmall per ogni mover. Ma dovrebbero essere sincronizzati, nel senso che se cancello un ordine perché già visitato deve essere cancellato anche negli altri.
+                    //todo da migliorare questa parte, che con i dati che abbiamo non dovrebbe verificarsi.
                     continue;
                 }
                 else
                 {
                     System.out.println("Min weight for "+minimum.getMin().to()+". Expected time: "+deliveryTime.getTime().get(minimum.getMin().to()));
                     double sum = deliveryTime.getTime().get(minimum.getMin().to()) +12;
-                    System.out.println(distanceMatrix.getAdj()[i][minimum.getMin().to()].weight()+" > "+sum+" ??? NO!!!");
-                    if(distanceMatrix.getAdj()[i][minimum.getMin().to()].weight() <= (deliveryTime.getTime().get(minimum.getMin().to())-3))
+                    System.out.println(distanceMatrix.getAdj()[i][minimum.getMin().to()].getWeight()+" > "+sum+" ??? NO!!!");
+                    if(distanceMatrix.getAdj()[i][minimum.getMin().to()].getWeight() <= (deliveryTime.getTime().get(minimum.getMin().to())-3))
                     {
                         double time = deliveryTime.getTime().get(minimum.getMin().to())-3;
                         System.out.println("Tempo successivo:::::: "+time+"....attuale: "+t_ist[i-posFirstMover]);
                         t_ist[i-posFirstMover] += (deliveryTime.getTime().get(minimum.getMin().to())-3);
-                        foundNext = true;
-                        counterDelivery++;
                     }
-                    else if(distanceMatrix.getAdj()[i][minimum.getMin().to()].weight() <= (deliveryTime.getTime().get(minimum.getMin().to())+3))
+                    else if(distanceMatrix.getAdj()[i][minimum.getMin().to()].getWeight() <= (deliveryTime.getTime().get(minimum.getMin().to())+3))
                     {
-                        t_ist[i-posFirstMover] += distanceMatrix.getAdj()[i][minimum.getMin().to()].weight();
-                        foundNext = true;
-                        counterDelivery++;
+                        t_ist[i-posFirstMover] += distanceMatrix.getAdj()[i][minimum.getMin().to()].getWeight();
                     }
-                    else if(distanceMatrix.getAdj()[i][minimum.getMin().to()].weight() <= (deliveryTime.getTime().get(minimum.getMin().to())+6))
+                    else if(distanceMatrix.getAdj()[i][minimum.getMin().to()].getWeight() <= (deliveryTime.getTime().get(minimum.getMin().to())+6))
                     {
-                        t_ist[i-posFirstMover] += distanceMatrix.getAdj()[i][minimum.getMin().to()].weight();
+                        t_ist[i-posFirstMover] += distanceMatrix.getAdj()[i][minimum.getMin().to()].getWeight();
                         z1[minimum.getMin().to()] = 1;
-                        foundNext = true;
-                        counterDelivery++;
                     }
-                    else if(distanceMatrix.getAdj()[i][minimum.getMin().to()].weight() <= (deliveryTime.getTime().get(minimum.getMin().to())+9))
+                    else if(distanceMatrix.getAdj()[i][minimum.getMin().to()].getWeight() <= (deliveryTime.getTime().get(minimum.getMin().to())+9))
                     {
-                        t_ist[i-posFirstMover] += distanceMatrix.getAdj()[i][minimum.getMin().to()].weight();
+                        t_ist[i-posFirstMover] += distanceMatrix.getAdj()[i][minimum.getMin().to()].getWeight();
                         z2[minimum.getMin().to()] = 1;
-                        foundNext = true;
-                        counterDelivery++;
                     }
-                    else if(distanceMatrix.getAdj()[i][minimum.getMin().to()].weight() <= (deliveryTime.getTime().get(minimum.getMin().to())+12))
+                    else if(distanceMatrix.getAdj()[i][minimum.getMin().to()].getWeight() <= (deliveryTime.getTime().get(minimum.getMin().to())+12))
                     {
-                        t_ist[i-posFirstMover] += distanceMatrix.getAdj()[i][minimum.getMin().to()].weight();
+                        t_ist[i-posFirstMover] += distanceMatrix.getAdj()[i][minimum.getMin().to()].getWeight();
                         z3[minimum.getMin().to()] = 1;
-                        foundNext = true;
-                        counterDelivery++;
                     }
+                    foundNext = true;
+                    counterDelivery++;
+                    tempKSmall.remove(minimum.getIndexInSmallest());
+                    adjMatrix.getAdj()[i][minimum.getMin().to()] = 1;
+                    X[minimum.getMin().to()] = t_ist[i-posFirstMover];
+
+
+                    for(int k=0; k<(V-M); k++)
+                        distanceMatrix.getAdj()[k][minimum.getMin().to()].setWeight(Double.NaN);
                 }
+                System.out.println("====="+counterDelivery);
             //    foundNext = true;
             }
 
         }
 
-   /*     System.out.println("*********************");
+        System.out.println("*********************");
         System.out.println(Arrays.toString(t_ist));
-        System.out.println(Arrays.toString(w));
+   /*     System.out.println(Arrays.toString(w));
         System.out.println(Arrays.toString(z1));
         System.out.println(Arrays.toString(z2));
         System.out.println(Arrays.toString(z3));*/
 
-     //   System.out.println("---------------------");
+        System.out.println("---------------------");
+        System.out.println(Arrays.toString(X));
      //   System.out.println(this.kSmallestDelT);
-     //   System.out.println(this.distanceMatrix);
+//        System.out.println(this.distanceMatrix);
+     /*   for(int z=0; z< V; z++)
+            for(int t=0; t< V-M; t++)
+            {
+                if(this.adjMatrix.getAdj()[z][t] == 1)
+                    System.out.println("TROVATOOOOOOO ---> "+z+", "+t);
+                    System.out.println(this.adjMatrix.getAdj()[z][t]);
+            }*/
+
      //   System.out.println(this.deliveryTime.getTime());
 
      //   System.out.println("---------------------");
       // System.out.println(this.minWeight(temp));
+
+    }
+
+    public void nextSteps()
+    {
 
     }
 
