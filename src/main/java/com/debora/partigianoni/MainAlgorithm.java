@@ -9,6 +9,7 @@ import com.debora.partigianoni.model.DistanceMatrix;
 import org.jcp.xml.dsig.internal.dom.DOMBase64Transform;
 import org.omg.PortableInterceptor.SYSTEM_EXCEPTION;*/
 
+import java.lang.reflect.Array;
 import java.util.*;
 
 public class MainAlgorithm {
@@ -136,23 +137,22 @@ public class MainAlgorithm {
         }
     }
 
-    public int getMaxBetweenExtremesIndex(double[] array, int min, int max)
+    public int getMaxBetweenExtremesIndex(double[] array, double min, double max)
     {
         int maxIndex = array.length;
         for (int j=0; j<array.length; j++) {
-            if (array[j] >= min && array[j] <= max) {
+            if (array[j] >= min && array[j] <= max && !Double.isNaN(array[j])) {
 //                System.out.println("TROVATO: "+j);
                 maxIndex = j;
                 break;
             }
         }
-
         if(maxIndex != array.length)
         {
         //    System.out.println("minIndex: "+minIndex);
             for (int i = 0; i < array.length; i++)
             {
-                if(array[i] >= min && array[i] <= max)
+                if(array[i] >= min && array[i] <= max && !Double.isNaN(array[i]))
                 {
                     if (array[i] > array[maxIndex]) {
                         maxIndex = i;
@@ -161,9 +161,34 @@ public class MainAlgorithm {
                 }
             }
         }
-        //  System.out.println("minIndex returned: "+minIndex);
-        return maxIndex;
 
+        return maxIndex;
+    }public int getMaxBetweenExtremesIndexProva(double[] array, double min, double max)
+    {
+        int maxIndex = array.length;
+        for (int j=0; j<array.length; j++) {
+            if (array[j] >= min && array[j] <= max && !Double.isNaN(array[j])) {
+//                System.out.println("TROVATO: "+j);
+                maxIndex = j;
+                break;
+            }
+        }
+        if(maxIndex != array.length)
+        {
+        //    System.out.println("minIndex: "+minIndex);
+            for (int i = 0; i < array.length; i++)
+            {
+                if(array[i] >= min && array[i] <= max && !Double.isNaN(array[i]))
+                {
+                    if (array[i] > array[maxIndex] && pos_ist[i] < pos_ist[maxIndex]) {
+                        maxIndex = i;
+                        //     System.out.println("New min index: "+minIndex);
+                    }
+                }
+            }
+        }
+
+        return maxIndex;
     }
 
 
@@ -385,6 +410,11 @@ public class MainAlgorithm {
         double[] tempArr;
         int minForPositive;
         int maxOfNegative;
+        DirectedEdge[] tempEdges;
+        double[] arrValues;
+        int max;
+        boolean found;
+        int contatoreTemp = 0;
         System.out.println(counterDelivery+"---"+counterMovers);
         while(counterDelivery != (V-M) && counterMovers != M)
         {
@@ -408,91 +438,173 @@ public class MainAlgorithm {
                     from = pos_ist[i];
                  //   System.out.println("M"+i+" è FALSE. Può spostarsi altrove.");
                     tempArr = new double[V-M];
+
+
+                    found = false;
+
+
                     System.out.println("M"+i+" si trova in "+from+" al tempo "+t_ist[i]);
                     //System.out.println(t_ist[i]);
                     for(j=0; j<(V-M); j++)
                     {
                         if(j != i)
                         {
-                //            System.out.println("Andare in "+j+" ha costo "+distanceMatrix.getAdj()[from][j].getWeight()+" e il tempo di consegna ideale è "+deliveryTime.getTime().get(j)+".");
+                            //            System.out.println("Andare in "+j+" ha costo "+distanceMatrix.getAdj()[from][j].getWeight()+" e il tempo di consegna ideale è "+deliveryTime.getTime().get(j)+".");
                             tempArr[j] = t_ist[i]+distanceMatrix.getAdj()[from][j].getWeight() - deliveryTime.getTime().get(j)+3;
-                    //        System.out.println(tempArr[j]);
+                            //        System.out.println(tempArr[j]);
                         }
                         else tempArr[j] = Double.NaN;
                     }
-                    System.out.println("^^^"+Arrays.toString(tempArr));
-                    System.out.println("Max value is for index "+this.getMaxValueIndex(tempArr)+". Value: "+tempArr[this.getMaxValueIndex(tempArr)]);
-                    //    minOfPositive = getMinPositiveValueIndex(tempArr);
 
-                    //parte iniziale per if sul foglio.
-                    minForPositive = getMaxBetweenExtremesIndex(tempArr, 0, 6);
+                    int dim = tempArr.length;
+                    int index = getMaxBetweenExtremesIndex(tempArr, 7, 15);
+                    if(index != tempArr.length)
+                        contatoreTemp++;
+                    System.out.println(Arrays.toString(tempArr));
+                    System.out.println("&&&&&&&&&&&&&&&&&&&&&&  "+index+". Trovati: "+contatoreTemp);
 
-
-                    if(minForPositive != tempArr.length)
-                        System.out.println("Massimo tra 0 e 6 per ordine "+minForPositive+". Valore: "+tempArr[minForPositive]);
-                    if(minForPositive == tempArr.length)// || tempArr[minForPositive] > 15)
+                    while(index != tempArr.length && !found)
                     {
-                        System.out.println("Non ottengo nulla con minOfPositive.");// tempArr["+minOfPositive+"] = "+tempArr[minOfPositive]);
-                        maxOfNegative = getMaxNegativeValueIndex(tempArr);
-                        if(maxOfNegative == tempArr.length)
+                        System.out.println("$$$$$$ Index a cui voglio mandre qualcuno:  "+index+". Value: "+tempArr[index]);
+                        tempEdges = new DirectedEdge[M];
+                        arrValues = new double[M];
+                        for(j=0; j<M; j++)
+                            tempEdges[j] = distanceMatrix.getAdj()[pos_ist[j]][index];
+                        for(j=0; j< tempEdges.length; j++)
+                            arrValues[j] = t_ist[j]+distanceMatrix.getAdj()[pos_ist[j]][index].getWeight()-deliveryTime.getTime().get(index)+3;
+
+                        System.out.println("Gli altri mover hanno i seguenti values: ");
+                        System.out.println(Arrays.toString(arrValues));
+                        System.out.println(Arrays.toString(pos_ist));
+                        max = getMaxBetweenExtremesIndexProva(arrValues, 0,6);
+                        System.out.println("Tra 0 e 6? "+max);
+
+                        if(max != arrValues.length)
                         {
-                            System.out.println("Non c'è alcun Negative!");
-                            //moverEnd a true, il mover non può più fare nulla.
-                            moverEnd[i] = true;
-                            counterMovers++;
-                            System.out.println("M"+i+" HA FINITO. Mover che hanno terminato: "+counterMovers);
+                            System.out.println("Posso andare in "+index+" da "+pos_ist[max]+"?");
+                            System.out.println("SI! Value per "+pos_ist[max]+": "+arrValues[max]);
+                            t_ist[max] += distanceMatrix.getAdj()[pos_ist[max]][index].getWeight();
+                          //  DirectedEdge[] temp =  distanceMatrix.getAdj()[from];
+                          //  System.out.println(Arrays.toString(temp));
+                            System.out.println("Si arriverà in "+max+" al tempo "+t_ist[max]+". Il tempo atteso è "+deliveryTime.getTime().get(index));
+                            adjMatrix.getAdj()[pos_ist[max]][index] = 1;
+                            X[index] = t_ist[max];
+                            pos_ist[max] = index;
+                            for (int k = 0; k < (V - M); k++)
+                                distanceMatrix.getAdj()[k][index].setWeight(Double.NaN);
+                            counterDelivery++;
+                            tempArr[index] = Double.NaN;
+                            this.delivered.add(index);
+                            this.delivered.sort(Comparator.naturalOrder());
+
+
+                            System.out.println("Counter Delivery: "+counterDelivery+". Consegnati: ");
+                            System.out.println(this.delivered);
+
                         }
                         else{
-                            System.out.println("--------NEW NEG--------");
-                            System.out.println("M"+i+": "+from+"--->"+maxOfNegative);
-                            System.out.println("Massimo tra i negativi trovato! tempArr["+maxOfNegative+"] = "+tempArr[maxOfNegative]);
-                            t_ist[i] += distanceMatrix.getAdj()[from][maxOfNegative].getWeight()-(tempArr[maxOfNegative]);//deliveryTime.getTime().get(maxOfNegative)+tempArr[maxOfNegative];
-                            System.out.println("Arriva al tempo "+t_ist[i]+" e quello atteso è "+deliveryTime.getTime().get(maxOfNegative));
-                            adjMatrix.getAdj()[from][maxOfNegative] = 1;
-                            X[maxOfNegative] =t_ist[i];
-                            pos_ist[i] = maxOfNegative;
-                            for(int k=0; k<(V-M); k++)
-                                distanceMatrix.getAdj()[k][maxOfNegative].setWeight(Double.NaN);
+                            t_ist[i] += distanceMatrix.getAdj()[from][index].getWeight();
+                         //   DirectedEdge[] temp =  distanceMatrix.getAdj()[from];
+                         //   System.out.println(Arrays.toString(temp));
+                            System.out.println("Arriva al tempo "+t_ist[i]+" e quello atteso è "+deliveryTime.getTime().get(index));
+                            System.out.println(counterDelivery);
+                            adjMatrix.getAdj()[from][index] = 1;
+                            X[index] = t_ist[i];
+                            pos_ist[i] = index;
+                            for (int k = 0; k < (V - M); k++)
+                                distanceMatrix.getAdj()[k][index].setWeight(Double.NaN);
                             counterDelivery++;
-                            System.out.println("Counter Delivery: "+counterDelivery);
+
+                            //todo Vedere in che intervallo capita il valore per modificare le z.
+                            if(tempArr[index] > 6 && tempArr[index] <=9)
+                                z1[index] = 1;
+                            else if(tempArr[index] > 9 && tempArr[index] <= 12)
+                                z2[index] = 1;
+                            else if(tempArr[index] > 12 && tempArr[index] <= 15)
+                                z3[index] = 1;
+
+                            this.delivered.add(index);
+                            this.delivered.sort(Comparator.naturalOrder());
+
+
+                            System.out.println("Counter Delivery: "+counterDelivery+". Consegnati: ");
+                            System.out.println(this.delivered);
+
+
+                            found = true;
                         }
+                        index = getMaxBetweenExtremesIndex(tempArr, 7, 15);
                     }
-                    else{
-                        //Ci sono valori positivi < 15 in tempArr.
-                        //if (tempArr[minOfPositive] >= 0 && tempArr[minOfPositive] <= 6) {
+                    if(!found)
+                    {
+                        System.out.println("^^^"+Arrays.toString(tempArr));
+                   //     System.out.println("Max value is for index "+this.getMaxValueIndex(tempArr)+". Value: "+tempArr[this.getMaxValueIndex(tempArr)]);
+                        //    minOfPositive = getMinPositiveValueIndex(tempArr);
+
+                        //parte iniziale per if sul foglio.
+                        minForPositive = getMaxBetweenExtremesIndex(tempArr, 0, 6);
+
+                        if(minForPositive != tempArr.length)
+                            System.out.println("Massimo tra 0 e 6 per ordine "+minForPositive+". Valore: "+tempArr[minForPositive]);
+                        if(minForPositive != tempArr.length)
+                        {
+                            System.out.println("--------NEW POS--------");
+                            System.out.println("M"+i+": "+from+"--->"+minForPositive);
+                            if (tempArr[minForPositive] > 6 && tempArr[minForPositive] <= 9) {       //TODO Basterebbe anche solo arr[minOfPositive] <= 9. Provare!
+                                System.out.println("Costo 1");
+                                z1[minForPositive] = 1;
+                            } else if (tempArr[minForPositive] > 9 && tempArr[minForPositive] <= 12) {
+                                z2[minForPositive] = 1;
+                                System.out.println("Costo 2");
+                            } else if (tempArr[minForPositive] > 12 && tempArr[minForPositive] <= 15) {
+                                z3[minForPositive] = 1;
+                                System.out.println("Costo 3");
+                            }
+                            t_ist[i] += distanceMatrix.getAdj()[from][minForPositive].getWeight();
+                            DirectedEdge[] temp =  distanceMatrix.getAdj()[from];
+                            System.out.println(Arrays.toString(temp));
+                            System.out.println("Arriva al tempo "+t_ist[i]+" e quello atteso è "+deliveryTime.getTime().get(minForPositive));
+                            adjMatrix.getAdj()[from][minForPositive] = 1;
+                            X[minForPositive] = t_ist[i];
+                            pos_ist[i] = minForPositive;
+                            for (int k = 0; k < (V - M); k++)
+                                distanceMatrix.getAdj()[k][minForPositive].setWeight(Double.NaN);
+                            counterDelivery++;
+
+                            //TODO CANCELLARE ALLA FINE. SOLO PER TEST E IMPIEGA TEMPO.
+                            this.delivered.add(minForPositive);
+                            this.delivered.sort(Comparator.naturalOrder());
 
 
-
-                        System.out.println("--------NEW POS--------");
-                        System.out.println("M"+i+": "+from+"--->"+minForPositive);
-                        if (tempArr[minForPositive] > 6 && tempArr[minForPositive] <= 9) {       //TODO Basterebbe anche solo arr[minOfPositive] <= 9. Provare!
-                            System.out.println("Costo 1");
-                            z1[minForPositive] = 1;
-                        } else if (tempArr[minForPositive] > 9 && tempArr[minForPositive] <= 12) {
-                            z2[minForPositive] = 1;
-                            System.out.println("Costo 2");
-                        } else if (tempArr[minForPositive] > 12 && tempArr[minForPositive] <= 15) {
-                            z3[minForPositive] = 1;
-                            System.out.println("Costo 3");
+                            System.out.println("Counter Delivery: "+counterDelivery+". Consegnati: ");
+                            System.out.println(this.delivered);
                         }
-                        t_ist[i] += distanceMatrix.getAdj()[from][minForPositive].getWeight();
-                        DirectedEdge[] temp =  distanceMatrix.getAdj()[from];
-                        System.out.println(Arrays.toString(temp));
-                        System.out.println("Arriva al tempo "+t_ist[i]+" e quello atteso è "+deliveryTime.getTime().get(minForPositive));
-                        adjMatrix.getAdj()[from][minForPositive] = 1;
-                        X[minForPositive] = t_ist[i];
-                        pos_ist[i] = minForPositive;
-                        for (int k = 0; k < (V - M); k++)
-                            distanceMatrix.getAdj()[k][minForPositive].setWeight(Double.NaN);
-                        counterDelivery++;
-
-                        //TODO CANCELLARE ALLA FINE. SOLO PER TEST E IMPIEGA TEMPO.
-                        this.delivered.add(minForPositive);
-                        this.delivered.sort(Comparator.naturalOrder());
-
-
-                        System.out.println("Counter Delivery: "+counterDelivery+". Consegnati: ");
-                        System.out.println(this.delivered);
+                        else{
+                            System.out.println("Non ottengo nulla con minOfPositive.");// tempArr["+minOfPositive+"] = "+tempArr[minOfPositive]);
+                            maxOfNegative = getMaxNegativeValueIndex(tempArr);
+                            if(maxOfNegative == tempArr.length)
+                            {
+                                System.out.println("Non c'è alcun Negative!");
+                                //moverEnd a true, il mover non può più fare nulla.
+                                moverEnd[i] = true;
+                                counterMovers++;
+                                System.out.println("M"+i+" HA FINITO. Mover che hanno terminato: "+counterMovers);
+                            }
+                            else{
+                                System.out.println("--------NEW NEG--------");
+                                System.out.println("M"+i+": "+from+"--->"+maxOfNegative);
+                                System.out.println("Massimo tra i negativi trovato! tempArr["+maxOfNegative+"] = "+tempArr[maxOfNegative]);
+                                t_ist[i] += distanceMatrix.getAdj()[from][maxOfNegative].getWeight()-(tempArr[maxOfNegative]);//deliveryTime.getTime().get(maxOfNegative)+tempArr[maxOfNegative];
+                                System.out.println("Arriva al tempo "+t_ist[i]+" e quello atteso è "+deliveryTime.getTime().get(maxOfNegative));
+                                adjMatrix.getAdj()[from][maxOfNegative] = 1;
+                                X[maxOfNegative] =t_ist[i];
+                                pos_ist[i] = maxOfNegative;
+                                for(int k=0; k<(V-M); k++)
+                                    distanceMatrix.getAdj()[k][maxOfNegative].setWeight(Double.NaN);
+                                counterDelivery++;
+                                System.out.println("Counter Delivery: "+counterDelivery);
+                            }
+                        }
                     }
                 }
             }
@@ -516,6 +628,7 @@ public class MainAlgorithm {
                 if (z3[i] == 1)
                     System.out.println(i);
             }
+        //    System.out.println("&&&&&&&&&&&&&&&&&&&&&&&"+contatoreTemp);
     }
 
     public void firstDeliveryProva(String deliveryFile)
