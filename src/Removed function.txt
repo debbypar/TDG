@@ -1,0 +1,113 @@
+    public void firstDelivery(String deliveryFile)
+    {
+        int i, j;
+        int posFirstMover = this.distanceMatrix.getPosFirstMover();
+//        System.out.println(this.distanceMatrix);
+        DirectedEdge[] tempDist;
+        Minimum minimum = null ;
+        List<Integer> tempKSmall;
+        boolean foundNext;
+
+    //    System.out.println("++++++++++++");
+    //    System.out.println(deliveryTime.getTime());
+        tempKSmall = DeliveryTimeController.selectKthIndex(deliveryTime.getTime(), M);//this.kSmallestDelT;
+
+      /*  System.out.println("%%%%%%%%%%%%%%%%%");
+        System.out.println(this.adjMatrix);
+        System.out.println("%%%%%%%%%%%%%%%%%");*/
+        for(i=posFirstMover; i<posFirstMover+M; i++)
+        {
+            foundNext = false;
+            this.deliveryTime = new DeliveryTime(deliveryFile);         //todo Trovare modo per evitare questa cosa che rallenta.
+            System.out.println("++++++++++"+tempKSmall.size());
+            System.out.println("--------------"+i+"--------------");
+            while(!foundNext)
+            {
+                tempDist = distanceMatrix.getAdj()[i];
+                //todo Da cambiare la funzione successiva.
+                minimum = this.edgeWithMinWeight(tempDist, tempKSmall);     //prendo il j con peso minimo tra quelli dei delivery time ordinati
+
+                if(distanceMatrix.getAdj()[i][minimum.getMin().to()].getWeight() > (deliveryTime.getTime().get(minimum.getMin().to())+12))
+                {
+                 /*   if(tempKSmall.size() > 0)
+                        tempKSmall.remove(minimum.getIndexInSmallest());
+                    else{
+                        System.out.println("-------------ERRORE-------------");
+                        System.out.println("Prendere qualche altro tempo di delivery per la prima fase perché per un certo mover non va bene nessuno!");
+                        System.out.println("-------------ERRORE-------------");
+                    }*/
+                 //todo in tal caso per rimuovere servirebbe un tempKSmall per ogni mover. Ma dovrebbero essere sincronizzati, nel senso che se cancello un ordine perché già visitato deve essere cancellato anche negli altri.
+                    //todo da migliorare questa parte, che con i dati che abbiamo non dovrebbe verificarsi.
+                    continue;
+                }
+                else
+                {
+                    System.out.println("Min weight for "+minimum.getMin().to()+". Expected time: "+deliveryTime.getTime().get(minimum.getMin().to()));
+                    double sum = deliveryTime.getTime().get(minimum.getMin().to()) +12;
+                    System.out.println(distanceMatrix.getAdj()[i][minimum.getMin().to()].getWeight()+" > "+sum+" ??? NO!!!");
+                    if(distanceMatrix.getAdj()[i][minimum.getMin().to()].getWeight() <= (deliveryTime.getTime().get(minimum.getMin().to())-3))
+                    {
+                    //    double time = deliveryTime.getTime().get(minimum.getMin().to())-3;
+                    //    System.out.println("Tempo successivo:::::: "+time+"....attuale: "+t_ist[i-posFirstMover]);
+                        t_ist[i-posFirstMover] += (deliveryTime.getTime().get(minimum.getMin().to())-3);
+                    }
+                    else if(distanceMatrix.getAdj()[i][minimum.getMin().to()].getWeight() <= (deliveryTime.getTime().get(minimum.getMin().to())+3))
+                    {
+                        t_ist[i-posFirstMover] += distanceMatrix.getAdj()[i][minimum.getMin().to()].getWeight();
+                    }
+                    else if(distanceMatrix.getAdj()[i][minimum.getMin().to()].getWeight() <= (deliveryTime.getTime().get(minimum.getMin().to())+6))
+                    {
+                        t_ist[i-posFirstMover] += distanceMatrix.getAdj()[i][minimum.getMin().to()].getWeight();
+                        z1[minimum.getMin().to()] = 1;
+                    }
+                    else if(distanceMatrix.getAdj()[i][minimum.getMin().to()].getWeight() <= (deliveryTime.getTime().get(minimum.getMin().to())+9))
+                    {
+                        t_ist[i-posFirstMover] += distanceMatrix.getAdj()[i][minimum.getMin().to()].getWeight();
+                        z2[minimum.getMin().to()] = 1;
+                    }
+                    else if(distanceMatrix.getAdj()[i][minimum.getMin().to()].getWeight() <= (deliveryTime.getTime().get(minimum.getMin().to())+12))
+                    {
+                        t_ist[i-posFirstMover] += distanceMatrix.getAdj()[i][minimum.getMin().to()].getWeight();
+                        z3[minimum.getMin().to()] = 1;
+                    }
+                    foundNext = true;
+                    counterDelivery++;
+                    tempKSmall.remove(minimum.getIndexInSmallest());
+                    adjMatrix.getAdj()[i][minimum.getMin().to()] = 1;
+                    X[minimum.getMin().to()] = t_ist[i-posFirstMover];
+                    pos_ist[i-posFirstMover] = minimum.getMin().to();
+
+                    for(int k=0; k<(V-M); k++)
+                        distanceMatrix.getAdj()[k][minimum.getMin().to()].setWeight(Double.NaN);
+                }
+                System.out.println("====="+counterDelivery);
+            //    foundNext = true;
+            }
+
+        }
+
+        System.out.println("*********************");
+        System.out.println(Arrays.toString(t_ist));
+   /*     System.out.println(Arrays.toString(w));
+        System.out.println(Arrays.toString(z1));
+        System.out.println(Arrays.toString(z2));
+        System.out.println(Arrays.toString(z3));*/
+
+        System.out.println("---------------------");
+        System.out.println(Arrays.toString(X));
+     //   System.out.println(this.kSmallestDelT);
+//        System.out.println(this.distanceMatrix);
+     /*   for(int z=0; z< V; z++)
+            for(int t=0; t< V-M; t++)
+            {
+                if(this.adjMatrix.getAdj()[z][t] == 1)
+                    System.out.println("TROVATOOOOOOO ---> "+z+", "+t);
+                    System.out.println(this.adjMatrix.getAdj()[z][t]);
+            }*/
+
+     //   System.out.println(this.deliveryTime.getTime());
+
+     //   System.out.println("---------------------");
+      // System.out.println(this.minWeight(temp));
+
+    }
