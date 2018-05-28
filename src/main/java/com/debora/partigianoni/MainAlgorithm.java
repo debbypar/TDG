@@ -864,7 +864,7 @@ public class MainAlgorithm {
         MainAlgorithm algorithm = new MainAlgorithm(34, 247, "deliveryTime_ist7.csv", "distanceMatrix_ist7.csv");
       //  System.out.println(algorithm.distanceMatrix);
         long startTime = System.nanoTime();
-        algorithm.firstDelivery("deliveryTime_ist7.csv");
+ //       algorithm.firstDelivery("deliveryTime_ist7.csv");
         algorithm.nextSteps();
         long endTime = System.nanoTime();
 
