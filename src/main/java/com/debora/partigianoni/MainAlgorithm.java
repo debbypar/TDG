@@ -163,7 +163,37 @@ public class MainAlgorithm {
         }
 
         return maxIndex;
-    }public int getMaxBetweenExtremesIndexProva(double[] array, double min, double max)
+    }
+
+    public int getMinBetweenExtremesIndex(double[] array, double min, double max)
+    {
+        int minIndex = array.length;
+        for (int j=0; j<array.length; j++) {
+            if (array[j] >= min && array[j] <= max && !Double.isNaN(array[j])) {
+//                System.out.println("TROVATO: "+j);
+                minIndex = j;
+                break;
+            }
+        }
+        if(minIndex != array.length)
+        {
+            //    System.out.println("minIndex: "+minIndex);
+            for (int i = 0; i < array.length; i++)
+            {
+                if(array[i] >= min && array[i] <= max && !Double.isNaN(array[i]))
+                {
+                    if (array[i] < array[minIndex]) {
+                        minIndex = i;
+                        //     System.out.println("New min index: "+minIndex);
+                    }
+                }
+            }
+        }
+
+        return minIndex;
+    }
+
+    public int getMaxBetweenExtremesIndexProva(double[] array, double min, double max)
     {
         int maxIndex = array.length;
         for (int j=0; j<array.length; j++) {
@@ -181,6 +211,33 @@ public class MainAlgorithm {
                 if(array[i] >= min && array[i] <= max && !Double.isNaN(array[i]))
                 {
                     if (array[i] > array[maxIndex] && pos_ist[i] < pos_ist[maxIndex]) {
+                        maxIndex = i;
+                        //     System.out.println("New min index: "+minIndex);
+                    }
+                }
+            }
+        }
+
+        return maxIndex;
+    }
+    public int getMaxBetweenExtremesIndexProva2(double[] array, double min, double max)
+    {
+        int maxIndex = array.length;
+        for (int j=0; j<array.length; j++) {
+            if (array[j] >= min && array[j] <= max && !Double.isNaN(array[j])) {
+//                System.out.println("TROVATO: "+j);
+                maxIndex = j;
+                break;
+            }
+        }
+        if(maxIndex != array.length)
+        {
+        //    System.out.println("minIndex: "+minIndex);
+            for (int i = 0; i < array.length; i++)
+            {
+                if(array[i] >= min && array[i] <= max && !Double.isNaN(array[i]))
+                {
+                    if (array[i] > array[maxIndex] && deliveryTime.getTime().get(i) < deliveryTime.getTime().get(i)) {
                         maxIndex = i;
                         //     System.out.println("New min index: "+minIndex);
                     }
@@ -476,11 +533,15 @@ public class MainAlgorithm {
                         System.out.println("Gli altri mover hanno i seguenti values: ");
                         System.out.println(Arrays.toString(arrValues));
                         System.out.println(Arrays.toString(pos_ist));
-                        max = getMaxBetweenExtremesIndexProva(arrValues, 0,6);
+                        max = getMaxBetweenExtremesIndex(arrValues, 0,6);
                         System.out.println("Tra 0 e 6? "+max);
 
                         if(max != arrValues.length)
                         {
+                            int prova = getMaxNegativeValueIndex(arrValues);
+                           // if(prova != arrValues.length)
+                                System.out.println("============================ "+prova);//+" --> "+arrValues[prova]);
+
                             System.out.println("Posso andare in "+index+" da "+pos_ist[max]+"?");
                             System.out.println("SI! Value per "+pos_ist[max]+": "+arrValues[max]);
                             t_ist[max] += distanceMatrix.getAdj()[pos_ist[max]][index].getWeight();
@@ -503,35 +564,64 @@ public class MainAlgorithm {
 
                         }
                         else{
-                            t_ist[i] += distanceMatrix.getAdj()[from][index].getWeight();
-                         //   DirectedEdge[] temp =  distanceMatrix.getAdj()[from];
-                         //   System.out.println(Arrays.toString(temp));
-                            System.out.println("Arriva al tempo "+t_ist[i]+" e quello atteso è "+deliveryTime.getTime().get(index));
-                            System.out.println(counterDelivery);
-                            adjMatrix.getAdj()[from][index] = 1;
-                            X[index] = t_ist[i];
-                            pos_ist[i] = index;
-                            for (int k = 0; k < (V - M); k++)
-                                distanceMatrix.getAdj()[k][index].setWeight(Double.NaN);
-                            counterDelivery++;
+                            int temp = getMinBetweenExtremesIndex(arrValues, 7, tempArr[index]);
+                            if(temp != arrValues.length)
+                            {
+                                System.out.println("Posso arrivarci con value < "+tempArr[index]+" pari a "+arrValues[temp]);
+                                System.out.println("Posso andare in "+index+" da "+pos_ist[temp]+"?");
+                                System.out.println("SI! Value per "+pos_ist[temp]+": "+arrValues[temp]);
+                                t_ist[temp] += distanceMatrix.getAdj()[pos_ist[temp]][index].getWeight();
+                                //  DirectedEdge[] temp =  distanceMatrix.getAdj()[from];
+                                //  System.out.println(Arrays.toString(temp));
+                                System.out.println("Si arriverà in "+temp+" al tempo "+t_ist[temp]+". Il tempo atteso è "+deliveryTime.getTime().get(index));
+                                adjMatrix.getAdj()[pos_ist[temp]][index] = 1;
+                                X[index] = t_ist[temp];
+                                pos_ist[temp] = index;
+                                for (int k = 0; k < (V - M); k++)
+                                    distanceMatrix.getAdj()[k][index].setWeight(Double.NaN);
+                                counterDelivery++;
+                                tempArr[index] = Double.NaN;
+                                this.delivered.add(index);
+                                this.delivered.sort(Comparator.naturalOrder());
 
-                            //todo Vedere in che intervallo capita il valore per modificare le z.
-                            if(tempArr[index] > 6 && tempArr[index] <=9)
+                            }
+                            else {
+                                t_ist[i] += distanceMatrix.getAdj()[from][index].getWeight();
+                                //   DirectedEdge[] temp =  distanceMatrix.getAdj()[from];
+                                //   System.out.println(Arrays.toString(temp));
+                                System.out.println("Arriva al tempo " + t_ist[i] + " e quello atteso è " + deliveryTime.getTime().get(index));
+                                System.out.println(counterDelivery);
+                                adjMatrix.getAdj()[from][index] = 1;
+                                X[index] = t_ist[i];
+                                pos_ist[i] = index;
+                                for (int k = 0; k < (V - M); k++)
+                                    distanceMatrix.getAdj()[k][index].setWeight(Double.NaN);
+                                counterDelivery++;
+
+/*                                if (tempArr[index] > 6 && tempArr[index] <= 9)
+                                    z1[index] = 1;
+                                else if (tempArr[index] > 9 && tempArr[index] <= 12)
+                                    z2[index] = 1;
+                                else if (tempArr[index] > 12 && tempArr[index] <= 15)
+                                    z3[index] = 1;*/
+
+                                this.delivered.add(index);
+                                this.delivered.sort(Comparator.naturalOrder());
+
+
+                                System.out.println("Counter Delivery: " + counterDelivery + ". Consegnati: ");
+                                System.out.println(this.delivered);
+
+
+                                found = true;
+                            }
+                            if (tempArr[index] > 6 && tempArr[index] <= 9)
                                 z1[index] = 1;
-                            else if(tempArr[index] > 9 && tempArr[index] <= 12)
+                            else if (tempArr[index] > 9 && tempArr[index] <= 12)
                                 z2[index] = 1;
-                            else if(tempArr[index] > 12 && tempArr[index] <= 15)
+                            else if (tempArr[index] > 12 && tempArr[index] <= 15)
                                 z3[index] = 1;
 
-                            this.delivered.add(index);
-                            this.delivered.sort(Comparator.naturalOrder());
-
-
-                            System.out.println("Counter Delivery: "+counterDelivery+". Consegnati: ");
-                            System.out.println(this.delivered);
-
-
-                            found = true;
                         }
                         index = getMaxBetweenExtremesIndex(tempArr, 7, 15);
                     }
@@ -623,11 +713,11 @@ public class MainAlgorithm {
             System.out.println("z1: "+sumInArray(z1));
             System.out.println("z2: "+sumInArray(z2));
             System.out.println("z3: "+sumInArray(z3));
-            for(i=0; i<(V-M); i++)
+          /*  for(i=0; i<(V-M); i++)
             {
                 if (z3[i] == 1)
                     System.out.println(i);
-            }
+            }*/
         //    System.out.println("&&&&&&&&&&&&&&&&&&&&&&&"+contatoreTemp);
     }
 
@@ -716,7 +806,6 @@ public class MainAlgorithm {
                 System.out.println("====="+counterDelivery);
                 //    foundNext = true;
             }
-
         }
 
         System.out.println("*********************");
@@ -745,17 +834,43 @@ public class MainAlgorithm {
 
     }
 
+    /*public int[] sumEdgeForMover()
+    {
+        int count = 0;
+        int i, tempPos;
+        int[] arr = new int[M];
+
+        for(i=0; i<M; i++)
+        {
+            tempPos = getIndexOfValue(adjMatrix.getAdj()[V-M+i], 1);
+
+        }
+    }*/
+
+    public Integer getIndexOfValue(Integer[] arr, int value)
+    {
+        int i, result=0;
+        for(i=0; i<arr.length; i++)
+            if(arr[i] == value)
+                result = i;
+
+        return result;
+
+    }
+
 
     public static void main(String args[])
     {
-        MainAlgorithm algorithm = new MainAlgorithm(36, 275, "deliveryTime_ist2.csv", "distanceMatrix_ist2.csv");
+        MainAlgorithm algorithm = new MainAlgorithm(34, 247, "deliveryTime_ist7.csv", "distanceMatrix_ist7.csv");
       //  System.out.println(algorithm.distanceMatrix);
         long startTime = System.nanoTime();
-        algorithm.firstDelivery("deliveryTime_ist2.csv");
+        algorithm.firstDelivery("deliveryTime_ist7.csv");
         algorithm.nextSteps();
         long endTime = System.nanoTime();
 
         long duration = (endTime - startTime);
+        System.out.println(Arrays.toString(algorithm.adjMatrix.getAdj()[2]));
+
         System.out.println(duration);
      //   System.out.println(algorithm.distanceMatrix);
     }
