@@ -513,14 +513,14 @@ public class MainAlgorithm {
                     found = false;
 
 
-                    System.out.println("M"+i+" si trova in "+from+" al tempo "+t_ist[i]);
+                    System.out.println("M"+i+" si trova in "+pos_ist[i]+" al tempo "+t_ist[i]);
                     //System.out.println(t_ist[i]);
                     for(j=0; j<(V-M); j++)
                     {
-                        if(j != from)
+                        if(j != pos_ist[i])
                         {
                             //            System.out.println("Andare in "+j+" ha costo "+distanceMatrix.getAdj()[from][j].getWeight()+" e il tempo di consegna ideale è "+deliveryTime.getTime().get(j)+".");
-                            tempArr[j] = t_ist[i]+distanceMatrix.getAdj()[from][j].getWeight() - deliveryTime.getTime().get(j)+3;
+                            tempArr[j] = t_ist[i]+distanceMatrix.getAdj()[pos_ist[i]][j].getWeight() - deliveryTime.getTime().get(j)+3;
                             //        System.out.println(tempArr[j]);
                         }
                         else tempArr[j] = Double.NaN;
@@ -530,12 +530,13 @@ public class MainAlgorithm {
                     int index = getMaxBetweenExtremesIndex(tempArr, 7, 15);
                     if(index != tempArr.length)
                         contatoreTemp++;
-                    System.out.println(Arrays.toString(tempArr));
+                    System.out.println("òòòòòòòòòòò "+Arrays.toString(tempArr));
                 //    System.out.println("&&&&&&&&&&&&&&&&&&&&&&  "+index+". Trovati: "+contatoreTemp);
 
                     while(index != tempArr.length && !found)
                     {
-                        System.out.println("$$$$$$ Index a cui voglio mandre qualcuno:  "+index+". Value: "+tempArr[index]);
+                        System.out.println("MOVER "+i+"..... STA IN POSIZIONE "+pos_ist[i]+" al tempo "+t_ist[i]);
+                        System.out.println("$$$$$$ Index a cui voglio mandare qualcuno:  "+index+". Value: "+tempArr[index]);
                         tempEdges = new DirectedEdge[M];
                         arrValues = new double[M];
                         for(j=0; j<M; j++)
@@ -599,9 +600,10 @@ public class MainAlgorithm {
                             }
                         //    else{
                                 int temp = getMinBetweenExtremesIndex(arrValues, 7, tempArr[index]);
-                                if(temp != arrValues.length)
+                            System.out.println("C'è qualcosa tra 7 e "+tempArr[index]+"?");
+                                if(temp != arrValues.length && temp != i)
                                 {
-                                    System.out.println("Posso arrivarci con value < "+tempArr[index]+" pari a "+arrValues[temp]);
+                                    System.out.println("SI. Posso andare in "+index+" con value < "+tempArr[index]+" pari a "+arrValues[temp]+"...temp: "+temp);
                                     System.out.println("Posso andare in "+index+" da "+pos_ist[temp]+"?");
                                     System.out.println("SI! Value per "+pos_ist[temp]+": "+arrValues[temp]);
                                     t_ist[temp] += distanceMatrix.getAdj()[pos_ist[temp]][index].getWeight();
@@ -633,11 +635,11 @@ public class MainAlgorithm {
                                     }
                                 }
                                 else {
+                                    System.out.println("NO. Tempo del mover "+i+": "+t_ist[i]+"...pos: "+pos_ist[i]);
                                     t_ist[i] += distanceMatrix.getAdj()[pos_ist[i]][index].getWeight();
                                     //   DirectedEdge[] temp =  distanceMatrix.getAdj()[from];
                                     //   System.out.println(Arrays.toString(temp));
                                     System.out.println("Arriva al tempo " + t_ist[i] + " e quello atteso è " + deliveryTime.getTime().get(index));
-                                    System.out.println(counterDelivery);
                                     System.out.println("^^^^^^^^^^^^^^^POS IN ADJ: ["+pos_ist[i]+"]["+index+"]^^^^^^^^^^^^^^^");
                                     adjMatrix.getAdj()[pos_ist[i]][index] = 1;
                                     X[index] = t_ist[i];
@@ -646,6 +648,7 @@ public class MainAlgorithm {
                                         distanceMatrix.getAdj()[k][index].setWeight(Double.NaN);
                                     counterDelivery++;
 
+                                    System.out.println("Consegne fatte: "+counterDelivery);
                                     System.out.println("------"+tempArr[index]);
                                     if (tempArr[index] > 6 && tempArr[index] <= 9)
                                     {
@@ -767,10 +770,14 @@ public class MainAlgorithm {
  //       System.out.println(Arrays.toString(X));
         System.out.println(this.counterDelivery+"....."+this.counterMovers);
         System.out.println(Arrays.toString(this.X));
+        int removed = 0;
         for(i=0; i<X.length; i++)
         {
             if(X[i] == 0.0)
+            {
                 System.out.println(i);
+                removed++;
+            }
         }
 
 
@@ -780,7 +787,11 @@ public class MainAlgorithm {
             System.out.println("z1: "+sumInArray(z1));
             System.out.println("z2: "+sumInArray(z2));
             System.out.println("z3: "+sumInArray(z3));
-            System.out.println(getDelivered());
+            int fObiettivo = sumInArray(z1)+2*sumInArray(z2)+3*sumInArray(z3)+10*removed;
+            System.out.println("w: "+removed);
+            System.out.println("Funzione Obiettivo: "+fObiettivo);
+        System.out.println(getDelivered());
+
           /*  for(i=0; i<(V-M); i++)
             {
                 if (z3[i] == 1)
@@ -967,6 +978,8 @@ public class MainAlgorithm {
      //   System.out.println(Arrays.toString(algorithm.adjMatrix.getAdj()[2]));
 
         System.out.println(duration);
+        System.out.println(algorithm.deliveryTime.getTime());
+        System.out.println(Arrays.toString(algorithm.X));
     /*    for(int z=0; z<algorithm.V; z++)
             System.out.println(z+": "+Arrays.toString(algorithm.adjMatrix.getAdj()[z]));*/
         /*if(algorithm.checkAdjMatrix(algorithm.adjMatrix) == false)
