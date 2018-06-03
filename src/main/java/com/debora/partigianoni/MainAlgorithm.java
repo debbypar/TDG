@@ -504,7 +504,7 @@ public class MainAlgorithm {
                     //System.out.println(t_ist[i]);
                     for(j=0; j<(V-M); j++)
                     {
-                        if(j != i)
+                        if(j != from)
                         {
                             //            System.out.println("Andare in "+j+" ha costo "+distanceMatrix.getAdj()[from][j].getWeight()+" e il tempo di consegna ideale è "+deliveryTime.getTime().get(j)+".");
                             tempArr[j] = t_ist[i]+distanceMatrix.getAdj()[from][j].getWeight() - deliveryTime.getTime().get(j)+3;
@@ -861,10 +861,10 @@ public class MainAlgorithm {
 
     public static void main(String args[])
     {
-        MainAlgorithm algorithm = new MainAlgorithm(34, 247, "deliveryTime_ist7.csv", "distanceMatrix_ist7.csv");
+        MainAlgorithm algorithm = new MainAlgorithm(35, 247, "deliveryTime_ist8.csv", "distanceMatrix_ist8.csv");
       //  System.out.println(algorithm.distanceMatrix);
         long startTime = System.nanoTime();
-        algorithm.firstDelivery("deliveryTime_ist7.csv");
+        algorithm.firstDelivery("deliveryTime_ist8.csv");
         algorithm.nextSteps();
         long endTime = System.nanoTime();
 
