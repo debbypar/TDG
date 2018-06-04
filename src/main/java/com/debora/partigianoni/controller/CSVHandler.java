@@ -13,7 +13,7 @@ public class CSVHandler {
         String pathRel;
         if(isDelivery)
             pathRel = "/src/csv/deliveryTime/";
-        else pathRel = "/src/csv/distanceMatrix2/";
+        else pathRel = "/src/csv/distanceMatrix/";
         pathRel = pathRel.concat(filename);
         String filePath = new File("").getAbsolutePath();
         String pathAbs = filePath.concat(pathRel);

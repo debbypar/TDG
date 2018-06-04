@@ -338,6 +338,7 @@ public class MainAlgorithm {
         return minIndex;
     }
 
+
     public void firstDelivery(String deliveryFile)
     {
         int i, j;
@@ -470,6 +471,84 @@ public class MainAlgorithm {
         return max;
     }
 
+    public void firstDelivery2(String deliveryFile){
+
+        int i, j;
+        double[] tempArr;
+        this.deliveryTime = new DeliveryTime(deliveryFile);
+        int index;
+        this.delivered = new ArrayList<>();
+        for(i=0; i<M; i++)
+        {
+            System.out.println(i+": "+distanceMatrix.getAdj()[i][15].getWeight());
+        }
+        for(i=0; i<M; i++)
+        {
+            System.out.println("--------M"+i+"--------");
+            System.out.println("Tempo istantaneo: "+t_ist[i]);
+            tempArr = new double[V-M];
+
+            for(j=0; j<(V-M); j++)
+            {
+                if(j != i)
+                {
+                    //            System.out.println("Andare in "+j+" ha costo "+distanceMatrix.getAdj()[from][j].getWeight()+" e il tempo di consegna ideale è "+deliveryTime.getTime().get(j)+".");
+                   // System.out.println(distanceMatrix.getAdj()[]);
+                    tempArr[j] = t_ist[i]+distanceMatrix.getAdj()[V-M+i][j].getWeight() - deliveryTime.getTime().get(j)+3;
+                    //        System.out.println(tempArr[j]);
+                }
+                else tempArr[j] = Double.NaN;
+            }
+            System.out.println("***");
+            System.out.println(Arrays.toString(tempArr));
+            //A VOLTE è MEGLIO CON MIN, ALTRE CON MAX. SCEGLIEREEEEEEE
+            index = getMinBetweenExtremesIndex(tempArr, 0, 6);
+            if(index != tempArr.length)
+            {
+                System.out.println("SI tra 0 e 6. Index: "+index+"..."+tempArr[index]);
+                //modifico tutto per [M1, index]
+                System.out.println("Peso da mover "+i+" a "+index+": "+distanceMatrix.getAdj()[V-M+i][index].getWeight());
+                t_ist[i] += distanceMatrix.getAdj()[V-M+i][index].getWeight();
+                adjMatrix.getAdj()[V-M+i][index] = 1;
+                X[index] = t_ist[i];
+                pos_ist[i] = index;
+                for(int k=0; k<(V); k++)
+                    distanceMatrix.getAdj()[k][index].setWeight(Double.NaN);
+                for(int k=0; k<(V-M); k++)
+                    distanceMatrix.getAdj()[V-M+i][k].setWeight(Double.NaN);
+                counterDelivery++;
+                this.delivered.add(index);
+                System.out.println("Nuovo tempo: "+t_ist[i]+". Tempo atteso: "+deliveryTime.getTime().get(index));
+            }
+            else{
+                index = getMaxNegativeValueIndex(tempArr);
+                if(index != tempArr.length){
+                    System.out.println("SI Negativi. Index: "+index+"... "+tempArr[index]);
+
+                    t_ist[i] += distanceMatrix.getAdj()[V-M+i][index].getWeight()-(tempArr[index]);            //modificato da from
+                    adjMatrix.getAdj()[V-M+i][index] = 1;                                                              //modificato da from
+                    X[index] =t_ist[i];
+                    pos_ist[i] = index;
+                    for(int k=0; k<(V); k++)
+                        distanceMatrix.getAdj()[k][index].setWeight(Double.NaN);
+                    for(int k=0; k<(V-M); k++)
+                        distanceMatrix.getAdj()[V-M+i][k].setWeight(Double.NaN);
+                    counterDelivery++;
+                    this.delivered.add(index);
+                    System.out.println("Nuovo tempo: "+t_ist[i]);
+                }
+                else{
+                    System.out.println("Cercare tra 6 e 15. 000000000000000000000000000000000000000");
+                }
+            }
+            int k;
+            for(k=0; k<(V-M); k++)
+                distanceMatrix.getAdj()[k][index].setWeight(Double.NaN);
+            for(k=0; k<(V-M); k++)
+                distanceMatrix.getAdj()[V-M+i][k].setWeight(Double.NaN);
+        }
+    }
+
 
     public void nextSteps()
     {
@@ -548,7 +627,9 @@ public class MainAlgorithm {
                         System.out.println(Arrays.toString(arrValues));
                         System.out.println(Arrays.toString(pos_ist));
                         System.out.println(Arrays.toString(t_ist));
-                        max = getMaxBetweenExtremesIndex(arrValues, 0,6);
+                     //   max = getMaxBetweenExtremesIndex(arrValues, 0,6);
+                        //todo sostituire variabile max con min perché ora è il minimo.
+                        max = getMinBetweenExtremesIndex(arrValues, 0,6);
                         System.out.println("Tra 0 e 6? "+max);
 
                         if(max != arrValues.length)
@@ -800,6 +881,7 @@ public class MainAlgorithm {
         //    System.out.println("&&&&&&&&&&&&&&&&&&&&&&&"+contatoreTemp);
     }
 
+
     public void firstDeliveryProva(String deliveryFile)
     {
         int i, j;
@@ -953,7 +1035,7 @@ public class MainAlgorithm {
                 sum = 0;
                 for(j=0; j<V-M; j++)
                 {
-                    sum += adjM.getAdj()[i][j];
+                    sum += adjM.getAdj()[j][i];
                 }
                 if(sum != 1)
                 {
@@ -967,10 +1049,11 @@ public class MainAlgorithm {
 
     public static void main(String args[])
     {
-        MainAlgorithm algorithm = new MainAlgorithm(35, 247, "deliveryTime_ist8.csv", "distanceMatrix_ist8.csv");
+        MainAlgorithm algorithm = new MainAlgorithm(38, 275, "deliveryTime_ist3.csv", "distanceMatrix_ist3.csv");
       //  System.out.println(algorithm.distanceMatrix);
         long startTime = System.nanoTime();
-        algorithm.firstDelivery("deliveryTime_ist8.csv");
+     //   algorithm.firstDelivery("deliveryTime_ist2.csv");
+        algorithm.firstDelivery2("deliveryTime_ist3.csv");
         algorithm.nextSteps();
         long endTime = System.nanoTime();
 
@@ -985,7 +1068,7 @@ public class MainAlgorithm {
         /*if(algorithm.checkAdjMatrix(algorithm.adjMatrix) == false)
             System.out.println("Qualche riga non ha somma pari a 1!!!");
         else System.out.println("Corretto");*/
-    //    algorithm.checkAdjMatrix(algorithm.adjMatrix);
+        algorithm.checkAdjMatrix(algorithm.adjMatrix);
     }
 }
 
