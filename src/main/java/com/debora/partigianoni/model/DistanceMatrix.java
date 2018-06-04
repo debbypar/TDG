@@ -66,7 +66,7 @@ public class DistanceMatrix {
      * @param file
      * @param V     Numero di vertici totale (compresi i mover)
      */
-    public DistanceMatrix(String file, int V)
+    public DistanceMatrix(String folderIndex, String file, int V)
     {
      //   this.V = 0;
         this.E = 0;
@@ -74,7 +74,7 @@ public class DistanceMatrix {
         this.adj = new DirectedEdge[V][V];
 
         CSVHandler csvHandler = new CSVHandler();
-        CSVReader distanceReader = csvHandler.readCSV(false, file);
+        CSVReader distanceReader = csvHandler.readCSV(false, file, folderIndex);
         String[] lineDistance;
 
         int k=0;
@@ -223,7 +223,7 @@ public class DistanceMatrix {
     public static void main(String[] args) {
        // int V = Integer.parseInt(args[0]);
        // int E = Integer.parseInt(args[1]);
-        DistanceMatrix G = new DistanceMatrix("distanceMatrix_ist2.csv", 275);
+        DistanceMatrix G = new DistanceMatrix("1", "distanceMatrix_ist2.csv", 275);
         int k,z;
      /*   for(k=0; k<275; k++)
             for (z=0; z<(275-36); z++)

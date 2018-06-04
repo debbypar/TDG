@@ -41,12 +41,12 @@ public class MainAlgorithm {
         this.delivered = delivered;
     }
 
-    public MainAlgorithm(int movers, int vertices, String deliveryFile, String distanceFile){
+    public MainAlgorithm(int movers, int vertices, String deliveryFile, String distanceFile, String folderIndex){
         this.M = movers;
         this.V = vertices;
         this.X = new double[V-M];
         this.deliveryTime = new DeliveryTime(deliveryFile);
-        this.distanceMatrix = new DistanceMatrix(distanceFile, vertices);
+        this.distanceMatrix = new DistanceMatrix(folderIndex, distanceFile, vertices);
         this.adjMatrix = new AdjMatrix(V);
         this.z1 = new int[V-M];
         this.z2 = new int[V-M];
@@ -473,11 +473,11 @@ public class MainAlgorithm {
         return max;
     }
 
-    public void firstDelivery2(String deliveryFile){
+    public void firstDelivery2(){
 
         int i, j;
         double[] tempArr;
-        this.deliveryTime = new DeliveryTime(deliveryFile);
+       // this.deliveryTime = new DeliveryTime(deliveryFile);
         int index;
         this.delivered = new ArrayList<>();
         for(i=0; i<M; i++)
@@ -759,14 +759,6 @@ public class MainAlgorithm {
                                     found = true;
                                // }
                             }
-
-                        /*    if (tempArr[index] > 6 && tempArr[index] <= 9)
-                                z1[index] = 1;
-                            else if (tempArr[index] > 9 && tempArr[index] <= 12)
-                                z2[index] = 1;
-                            else if (tempArr[index] > 12 && tempArr[index] <= 15)
-                                z3[index] = 1;*/
-
                         }
                         index = getMaxBetweenExtremesIndex(tempArr, 7, 15);
                     }
@@ -858,6 +850,7 @@ public class MainAlgorithm {
         {
             if(X[i] == 0.0)
             {
+                w[i] = 1;
                 System.out.println(i);
                 removed++;
             }
@@ -973,42 +966,9 @@ public class MainAlgorithm {
 
         System.out.println("*********************");
         System.out.println(Arrays.toString(t_ist));
-   /*     System.out.println(Arrays.toString(w));
-        System.out.println(Arrays.toString(z1));
-        System.out.println(Arrays.toString(z2));
-        System.out.println(Arrays.toString(z3));*/
-
         System.out.println("---------------------");
         System.out.println(Arrays.toString(X));
-        //   System.out.println(this.kSmallestDelT);
-//        System.out.println(this.distanceMatrix);
-     /*   for(int z=0; z< V; z++)
-            for(int t=0; t< V-M; t++)
-            {
-                if(this.adjMatrix.getAdj()[z][t] == 1)
-                    System.out.println("TROVATOOOOOOO ---> "+z+", "+t);
-                    System.out.println(this.adjMatrix.getAdj()[z][t]);
-            }*/
-
-        //   System.out.println(this.deliveryTime.getTime());
-
-        //   System.out.println("---------------------");
-        // System.out.println(this.minWeight(temp));
-
     }
-
-    /*public int[] sumEdgeForMover()
-    {
-        int count = 0;
-        int i, tempPos;
-        int[] arr = new int[M];
-
-        for(i=0; i<M; i++)
-        {
-            tempPos = getIndexOfValue(adjMatrix.getAdj()[V-M+i], 1);
-
-        }
-    }*/
 
     public Integer getIndexOfValue(Integer[] arr, int value)
     {
@@ -1049,36 +1009,32 @@ public class MainAlgorithm {
        // return isOne;
     }
 
-    public void writeOnCsvFile()
-    {
-
-    }
 
     public static void main(String args[])
     {
-        MainAlgorithm algorithm = new MainAlgorithm(36, 275, "deliveryTime_ist2.csv", "distanceMatrix_ist2.csv");
-      //  System.out.println(algorithm.distanceMatrix);
-        long startTime = System.nanoTime();
-     //   algorithm.firstDelivery("deliveryTime_ist2.csv");
-        algorithm.firstDelivery2("deliveryTime_ist2.csv");
-        algorithm.nextSteps();
-        long endTime = System.nanoTime();
+     //   String istNumber = "ist4";
+        String folder = "2";
+        int[] V = {275, 275, 266, 260, 256, 247, 247, 248, 243, 257, 237, 233, 231, 241, 227,235, 230, 217, 223, 221, 216, 219, 216, 216, 213, 217, 205, 208, 207, 204, 204, 199, 198, 201};
+        int[] M = {36, 38, 45, 41, 39, 34, 35, 36, 34, 50, 35, 33, 34, 44, 30, 41, 39, 29, 36, 34, 30, 35, 33, 34, 31, 37, 26, 30, 31, 31, 32, 27, 29, 38};
+        for(int i=2; i<36; i++)
+        {
+            MainAlgorithm algorithm = new MainAlgorithm(M[i-2], V[i-2], "deliveryTime_ist".concat(Integer.toString(i)).concat(".csv"), "distanceMatrix_ist".concat(Integer.toString(i)).concat(".csv"), folder);
+            long startTime = System.nanoTime();
+            algorithm.firstDelivery2();
+            algorithm.nextSteps();
+            long endTime = System.nanoTime();
 
-        long duration = (endTime - startTime);
-     //   System.out.println(Arrays.toString(algorithm.adjMatrix.getAdj()[2]));
+            long duration = (endTime - startTime);
 
-        System.out.println(duration);
-        System.out.println(algorithm.deliveryTime.getTime());
-        System.out.println(Arrays.toString(algorithm.X));
-    /*    for(int z=0; z<algorithm.V; z++)
-            System.out.println(z+": "+Arrays.toString(algorithm.adjMatrix.getAdj()[z]));*/
-        /*if(algorithm.checkAdjMatrix(algorithm.adjMatrix) == false)
-            System.out.println("Qualche riga non ha somma pari a 1!!!");
-        else System.out.println("Corretto");*/
-       // algorithm.checkAdjMatrix(algorithm.adjMatrix);
-        CSVHandler csvHandler = new CSVHandler();
-        csvHandler.writeOnFile("output1/ist2/", algorithm.X, algorithm.z1, algorithm.z2, algorithm.z3, algorithm.w, algorithm.adjMatrix.getAdj());
-        System.out.println(Arrays.toString(algorithm.X));
+            System.out.println(duration);
+            CSVHandler csvHandler = new CSVHandler();
+            csvHandler.writeOnFile("output".concat(folder).concat("/ist").concat(Integer.toString(i)).concat("/"), algorithm.X, algorithm.z1, algorithm.z2, algorithm.z3, algorithm.w, algorithm.adjMatrix.getAdj());
+            System.out.println(algorithm.deliveryTime.getTime());
+            System.out.println(Arrays.toString(algorithm.X));
+
+
+        }
+      //  int fObiettivo = algorithm.sumInArray(algorithm.z1)+2*algorithm.sumInArray(algorithm.z2)+3*algorithm.sumInArray(algorithm.z3)+10*algorithm.sumInArray(algorithm.w);
     }
 }
 

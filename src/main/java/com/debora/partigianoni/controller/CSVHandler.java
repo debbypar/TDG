@@ -13,12 +13,12 @@ import java.util.List;
 
 public class CSVHandler {
 
-    public CSVReader readCSV(boolean isDelivery, String filename)
+    public CSVReader readCSV(boolean isDelivery, String filename, String folderIndex)
     {
         String pathRel;
         if(isDelivery)
             pathRel = "/src/csv/deliveryTime/";
-        else pathRel = "/src/csv/distanceMatrix2/";
+        else pathRel = "/src/csv/distanceMatrix".concat(folderIndex).concat("/");
         pathRel = pathRel.concat(filename);
         String filePath = new File("").getAbsolutePath();
         System.out.println("---"+filePath);
@@ -83,7 +83,9 @@ public class CSVHandler {
         String fileZ2 = pathAbs.concat("Z2.csv");
         String fileZ3 = pathAbs.concat("Z3.csv");
         String fileW = pathAbs.concat("W.csv");
+        String fileSummary = pathAbs.concat("Summary.csv");
 
+        int objective, sumZ1, sumZ2, sumZ3, sumW;
 
         StringBuilder builder = new StringBuilder();
         for(int i = 0; i < Y.length; i++)//for each row
@@ -102,9 +104,25 @@ public class CSVHandler {
             Files.write(Paths.get(fileZ1), Arrays.toString(z1).getBytes());
             Files.write(Paths.get(fileZ2), Arrays.toString(z2).getBytes());
             Files.write(Paths.get(fileZ3), Arrays.toString(z3).getBytes());
-            //Files.write(Paths.get(fileW), Arrays.toString(w).getBytes());
-//            Files.write(Paths.get(fileY), Arrays.toString(Y).getBytes());
+            Files.write(Paths.get(fileW), Arrays.toString(w).getBytes());
 
+            //Summary
+            FileWriter writerSum = new FileWriter(fileSummary);
+            sumZ1 = sumInArray(z1);
+            sumZ2 = sumInArray(z2);
+            sumZ3 = sumInArray(z3);
+            sumW = sumInArray(w);
+            objective = sumZ1+2*sumZ2+3*sumZ3+10*sumW;
+            writerSum.append("Objective: "+Integer.toString(objective)+"\n");
+            writerSum.append("Z1: "+Integer.toString(sumZ1)+"\n");
+            writerSum.append("Z2: "+Integer.toString(sumZ2)+"\n");
+            writerSum.append("Z3: "+Integer.toString(sumZ3)+"\n");
+            writerSum.append("W: "+Integer.toString(sumW)+"\n");
+
+            writerSum.flush();
+            writerSum.close();
+
+            //Matrice Y
             BufferedWriter writer = new BufferedWriter(new FileWriter(fileY));
             writer.write(builder.toString());//save the string representation of the board
             writer.close();
@@ -114,11 +132,20 @@ public class CSVHandler {
         }
     }
 
+    public int sumInArray(int[] array)
+    {
+        int sum=0;
+        int i;
+        for(i=0; i<array.length; i++)
+            sum +=array[i];
+        return sum;
+    }
+
     public static void main(String[] args)
     {
         CSVHandler csvHandler = new CSVHandler();
-        CSVReader deliveryReader = csvHandler.readCSV(true, "deliveryTime_ist2.csv");
-        CSVReader distanceReader = csvHandler.readCSV(false, "distanceMatrix_ist2.csv");
+        CSVReader deliveryReader = csvHandler.readCSV(true, "deliveryTime_ist2.csv", "");
+        CSVReader distanceReader = csvHandler.readCSV(false, "distanceMatrix_ist2.csv", "1");
         String[] lineDelivery;
         String[] lineDistance;
      //   System.out.println("DELIVERY:\n");

@@ -13,7 +13,7 @@ public class DeliveryTime {
     public DeliveryTime(String file)
     {
         CSVHandler csvHandler = new CSVHandler();
-        CSVReader deliveryReader = csvHandler.readCSV(true, file);
+        CSVReader deliveryReader = csvHandler.readCSV(true, file, "");
         String[] lineDelivery;
       //  double[] time = null;
         ArrayList<Double> time = new ArrayList<Double>();
