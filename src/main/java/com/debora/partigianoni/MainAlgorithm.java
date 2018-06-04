@@ -1009,16 +1009,13 @@ public class MainAlgorithm {
        // return isOne;
     }
 
-
-    public static void main(String args[])
+    public static void testAllDatasets(String folderNumber, int[] vertices, int[] movers)
     {
-     //   String istNumber = "ist4";
-        String folder = "2";
-        int[] V = {275, 275, 266, 260, 256, 247, 247, 248, 243, 257, 237, 233, 231, 241, 227,235, 230, 217, 223, 221, 216, 219, 216, 216, 213, 217, 205, 208, 207, 204, 204, 199, 198, 201};
-        int[] M = {36, 38, 45, 41, 39, 34, 35, 36, 34, 50, 35, 33, 34, 44, 30, 41, 39, 29, 36, 34, 30, 35, 33, 34, 31, 37, 26, 30, 31, 31, 32, 27, 29, 38};
-        for(int i=2; i<36; i++)
+        int i;
+        //(movers.length+2)
+        for(i=2; i<3; i++)
         {
-            MainAlgorithm algorithm = new MainAlgorithm(M[i-2], V[i-2], "deliveryTime_ist".concat(Integer.toString(i)).concat(".csv"), "distanceMatrix_ist".concat(Integer.toString(i)).concat(".csv"), folder);
+            MainAlgorithm algorithm = new MainAlgorithm(movers[i-2], vertices[i-2], "deliveryTime_ist".concat(Integer.toString(i)).concat(".csv"), "distanceMatrix_ist".concat(Integer.toString(i)).concat(".csv"), folderNumber);
             long startTime = System.nanoTime();
             algorithm.firstDelivery2();
             algorithm.nextSteps();
@@ -1028,12 +1025,22 @@ public class MainAlgorithm {
 
             System.out.println(duration);
             CSVHandler csvHandler = new CSVHandler();
-            csvHandler.writeOnFile("output".concat(folder).concat("/ist").concat(Integer.toString(i)).concat("/"), algorithm.X, algorithm.z1, algorithm.z2, algorithm.z3, algorithm.w, algorithm.adjMatrix.getAdj());
+            csvHandler.writeOnFile("output".concat(folderNumber).concat("/ist").concat(Integer.toString(i)).concat("/"), algorithm.X, algorithm.z1, algorithm.z2, algorithm.z3, algorithm.w, algorithm.adjMatrix.getAdj());
             System.out.println(algorithm.deliveryTime.getTime());
             System.out.println(Arrays.toString(algorithm.X));
-
-
         }
+    }
+
+    public static void main(String args[])
+    {
+     //   String istNumber = "ist4";
+        String folder = "1";
+        int[] V = {275, 275, 266, 260, 256, 247, 247, 248, 243, 257, 237, 233, 231, 241, 227,235, 230, 217, 223, 221, 216, 219, 216, 216, 213, 217, 205, 208, 207, 204, 204, 199, 198, 201};
+        int[] M = {36, 38, 45, 41, 39, 34, 35, 36, 34, 50, 35, 33, 34, 44, 30, 41, 39, 29, 36, 34, 30, 35, 33, 34, 31, 37, 26, 30, 31, 31, 32, 27, 29, 38};
+
+
+        MainAlgorithm.testAllDatasets(folder, V, M);
+
       //  int fObiettivo = algorithm.sumInArray(algorithm.z1)+2*algorithm.sumInArray(algorithm.z2)+3*algorithm.sumInArray(algorithm.z3)+10*algorithm.sumInArray(algorithm.w);
     }
 }
