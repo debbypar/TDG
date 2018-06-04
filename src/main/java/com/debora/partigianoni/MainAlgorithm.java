@@ -1,5 +1,6 @@
 package com.debora.partigianoni;
 
+import com.debora.partigianoni.controller.CSVHandler;
 import com.debora.partigianoni.controller.DeliveryTimeController;
 import com.debora.partigianoni.model.AdjMatrix;
 import com.debora.partigianoni.model.DeliveryTime;
@@ -9,6 +10,7 @@ import com.debora.partigianoni.model.DistanceMatrix;
 import org.jcp.xml.dsig.internal.dom.DOMBase64Transform;
 import org.omg.PortableInterceptor.SYSTEM_EXCEPTION;*/
 
+import java.io.IOException;
 import java.lang.reflect.Array;
 import java.util.*;
 
@@ -1027,13 +1029,13 @@ public class MainAlgorithm {
        // boolean isOne = true;
 
         //check righe
-        for(i=0; i<V; i++)
+        for(i=0; i<V-M; i++)
         {
            /* if(isOne == false)
                 break;
             else {*/
                 sum = 0;
-                for(j=0; j<V-M; j++)
+                for(j=0; j<V; j++)
                 {
                     sum += adjM.getAdj()[j][i];
                 }
@@ -1047,13 +1049,18 @@ public class MainAlgorithm {
        // return isOne;
     }
 
+    public void writeOnCsvFile()
+    {
+
+    }
+
     public static void main(String args[])
     {
-        MainAlgorithm algorithm = new MainAlgorithm(38, 275, "deliveryTime_ist3.csv", "distanceMatrix_ist3.csv");
+        MainAlgorithm algorithm = new MainAlgorithm(36, 275, "deliveryTime_ist2.csv", "distanceMatrix_ist2.csv");
       //  System.out.println(algorithm.distanceMatrix);
         long startTime = System.nanoTime();
      //   algorithm.firstDelivery("deliveryTime_ist2.csv");
-        algorithm.firstDelivery2("deliveryTime_ist3.csv");
+        algorithm.firstDelivery2("deliveryTime_ist2.csv");
         algorithm.nextSteps();
         long endTime = System.nanoTime();
 
@@ -1068,7 +1075,10 @@ public class MainAlgorithm {
         /*if(algorithm.checkAdjMatrix(algorithm.adjMatrix) == false)
             System.out.println("Qualche riga non ha somma pari a 1!!!");
         else System.out.println("Corretto");*/
-        algorithm.checkAdjMatrix(algorithm.adjMatrix);
+       // algorithm.checkAdjMatrix(algorithm.adjMatrix);
+        CSVHandler csvHandler = new CSVHandler();
+        csvHandler.writeOnFile("output1/ist2/", algorithm.X, algorithm.z1, algorithm.z2, algorithm.z3, algorithm.w, algorithm.adjMatrix.getAdj());
+        System.out.println(Arrays.toString(algorithm.X));
     }
 }
 
