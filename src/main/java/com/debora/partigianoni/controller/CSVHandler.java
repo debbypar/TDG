@@ -21,9 +21,9 @@ public class CSVHandler {
         else pathRel = "/src/csv/distanceMatrix".concat(folderIndex).concat("/");
         pathRel = pathRel.concat(filename);
         String filePath = new File("").getAbsolutePath();
-        System.out.println("---"+filePath);
+//        System.out.println("---"+filePath);
         String pathAbs = filePath.concat(pathRel);
-        System.out.println("***"+pathAbs);
+//        System.out.println("***"+pathAbs);
         CSVReader reader = null;
         try{
             reader = new CSVReader(new FileReader(pathAbs));
@@ -69,7 +69,7 @@ public class CSVHandler {
         }
     }*/
 
-    public void writeOnFile(String folderPathInResults, double[] X, int[] z1, int[] z2, int[] z3, int[] w, Integer[][] Y)
+    public void writeOnFile(String folderPathInResults, double[] X, int[] z1, int[] z2, int[] z3, int[] w, Integer[][] Y, long duration)
     {
         String pathRel = "/src/csv/results/";
         pathRel = pathRel.concat(folderPathInResults);
@@ -86,6 +86,8 @@ public class CSVHandler {
         String fileSummary = pathAbs.concat("Summary.csv");
 
         int objective, sumZ1, sumZ2, sumZ3, sumW;
+
+        double result = (double) duration/1000000000;
 
         StringBuilder builder = new StringBuilder();
         for(int i = 0; i < Y.length; i++)//for each row
@@ -118,6 +120,7 @@ public class CSVHandler {
             writerSum.append("Z2: "+Integer.toString(sumZ2)+"\n");
             writerSum.append("Z3: "+Integer.toString(sumZ3)+"\n");
             writerSum.append("W: "+Integer.toString(sumW)+"\n");
+            writerSum.append("Time: "+Double.toString((result))+" s\n");
 
             writerSum.flush();
             writerSum.close();
