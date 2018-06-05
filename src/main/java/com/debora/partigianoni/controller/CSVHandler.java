@@ -34,40 +34,6 @@ public class CSVHandler {
         return reader;
     }
 
-    /*public void writeCSV(int[] test, String filename) throws IOException{
-        //StringWriter writer = new StringWriter();
-        String pathRel = "/src/csv/results/";
-        pathRel = pathRel.concat(filename);
-        String filePath = new File("").getAbsolutePath();
-        String pathAbs = filePath.concat(pathRel);
-        CSVWriter writer = new CSVWriter(new FileWriter(pathAbs));
-
-        String prova = Arrays.toString(test);
-        for(int i=0; i< test.length; i++)
-        {
-            //writer.writeNext(Arrays.toString(test));
-        }
-        System.out.println("CSV File written successfully line by line");
-        writer.close();
-
-    }*/
-
-
-    /*public void writeOnFile(int[] test, String fileName)
-    {
-        String pathRel = "/src/csv/results/";
-        pathRel = pathRel.concat(fileName);
-        String filePath = new File("").getAbsolutePath();
-        String pathAbs = filePath.concat(pathRel);
-        try {
-            FileOutputStream file = new FileOutputStream(pathAbs);
-            for (int i = 0; i < test.length; i++)
-                file.write(test[i]);
-            file.close();
-        } catch (IOException e) {
-            System.out.println("Error - " + e.toString());
-        }
-    }*/
 
     public void writeOnFile(String folderPathInResults, double[] X, int[] z1, int[] z2, int[] z3, int[] w, Integer[][] Y, long duration)
     {
@@ -120,7 +86,7 @@ public class CSVHandler {
             writerSum.append("Z2: "+Integer.toString(sumZ2)+"\n");
             writerSum.append("Z3: "+Integer.toString(sumZ3)+"\n");
             writerSum.append("W: "+Integer.toString(sumW)+"\n");
-            writerSum.append("Time: "+Double.toString((result))+" s\n");
+           // writerSum.append("Time: "+Double.toString((result))+" s\n");
 
             writerSum.flush();
             writerSum.close();
