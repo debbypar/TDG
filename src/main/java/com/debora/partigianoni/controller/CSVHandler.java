@@ -86,7 +86,7 @@ public class CSVHandler {
             writerSum.append("Z2: "+Integer.toString(sumZ2)+"\n");
             writerSum.append("Z3: "+Integer.toString(sumZ3)+"\n");
             writerSum.append("W: "+Integer.toString(sumW)+"\n");
-           // writerSum.append("Time: "+Double.toString((result))+" s\n");
+            writerSum.append("Time: "+Double.toString((result))+" s\n");
 
             writerSum.flush();
             writerSum.close();

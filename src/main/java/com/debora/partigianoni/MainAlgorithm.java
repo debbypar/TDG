@@ -31,6 +31,15 @@ public class MainAlgorithm {
     private int counterDelivery;
     private boolean[] moverEnd;
     private List<Integer> delivered;
+    private Result[] results;
+
+    public Result[] getResults() {
+        return results;
+    }
+
+    public void setResults(Result[] results) {
+        this.results = results;
+    }
 
     public List<Integer> getDelivered() {
         return delivered;
@@ -1242,7 +1251,7 @@ public class MainAlgorithm {
         int i, j, k;
         long totStartTime, totEndTime, totTime;
         //(movers.length+2)
-        for(i=2; i<(movers.length+2); i++)
+        for(i=31; i<32; i++)
         {
             MainAlgorithm algorithm;
             results = new Result[movers[i-2]];
@@ -1293,7 +1302,7 @@ public class MainAlgorithm {
     public static void main(String args[])
     {
      //   String istNumber = "ist4";
-        String folder = "2";
+        String folder = "1";
         int[] V = {275, 275, 266, 260, 256, 247, 247, 248, 243, 257, 237, 233, 231, 241, 227,235, 230, 217, 223, 221, 216, 219, 216, 216, 213, 217, 205, 208, 207, 204, 204, 199, 198, 201};
         int[] M = {36, 38, 45, 41, 39, 34, 35, 36, 34, 50, 35, 33, 34, 44, 30, 41, 39, 29, 36, 34, 30, 35, 33, 34, 31, 37, 26, 30, 31, 31, 32, 27, 29, 38};
         //int[] V = {235, 275, 266, 260, 256, 247, 247, 248, 243, 257, 237, 233, 231, 241, 227,275, 230, 217, 223, 221, 216, 219, 216, 216, 213, 217, 205, 208, 207, 204, 204, 199, 198, 201};
