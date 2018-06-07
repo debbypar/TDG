@@ -35,7 +35,7 @@ public class CSVHandler {
     }
 
 
-    public void writeOnFile(String folderPathInResults, double[] X, int[] z1, int[] z2, int[] z3, int[] w, Integer[][] Y, long duration)
+    public void writeOnFile(String folderPathInResults, double[] X, int[] z1, int[] z2, int[] z3, int[] w, Integer[][] Y, long duration, int movers)
     {
         String pathRel = "/src/csv/results/";
         pathRel = pathRel.concat(folderPathInResults);
@@ -53,26 +53,83 @@ public class CSVHandler {
 
         int objective, sumZ1, sumZ2, sumZ3, sumW;
 
+        int i, j;
+
         double result = (double) duration/1000000000;
 
         StringBuilder builder = new StringBuilder();
-        for(int i = 0; i < Y.length; i++)//for each row
+
+
+        //START-> Scrittura di Y
+        builder.append("Y");
+        builder.append(",");
+        for (i=1; i<=Y.length-movers; i++){
+            builder.append("O"+i);
+            if(i<Y.length-movers)
+                builder.append(",");
+        }
+        builder.append("\n");//append new line at the end of the row
+
+        int temp = 1;
+        for(i = 1; i < Y.length+1; i++)//for each row
         {
-            for(int j = 0; j < Y.length; j++)//for each column
+            if(i <= Y.length-movers)
             {
-                builder.append(Y[i][j]+"");//append to the output string
-                if(j < Y.length - 1)//if this is not the last row element
+                builder.append("O"+i);
+            }else{
+                builder.append("M"+temp);
+                temp++;
+            }
+            builder.append(",");
+
+            for(j = 1; j <= Y.length-movers; j++)//for each column
+            {
+
+                builder.append(Y[i-1][j-1]+"");//append to the output string
+                if(j < Y.length-movers)//if this is not the last row element
                     builder.append(",");//then add comma (if you don't like commas you can use spaces)
             }
             builder.append("\n");//append new line at the end of the row
         }
+        //END-> Scrittura di Y
 
         try {
-            Files.write(Paths.get(fileX), Arrays.toString(X).getBytes());
+            /*Files.write(Paths.get(fileX), Arrays.toString(X).getBytes());
             Files.write(Paths.get(fileZ1), Arrays.toString(z1).getBytes());
             Files.write(Paths.get(fileZ2), Arrays.toString(z2).getBytes());
             Files.write(Paths.get(fileZ3), Arrays.toString(z3).getBytes());
-            Files.write(Paths.get(fileW), Arrays.toString(w).getBytes());
+            Files.write(Paths.get(fileW), Arrays.toString(w).getBytes());*/
+
+            FileWriter writerX = new FileWriter(fileX);
+            FileWriter writerZ1 = new FileWriter(fileZ1);
+            FileWriter writerZ2 = new FileWriter(fileZ2);
+            FileWriter writerZ3 = new FileWriter(fileZ3);
+            FileWriter writerW = new FileWriter(fileW);
+
+            writerX.append("order,x\n");
+            writerZ1.append("order,z1\n");
+            writerZ2.append("order,z2\n");
+            writerZ3.append("order,z3\n");
+            writerW.append("order,w\n");
+
+            for(int k=1; k<=X.length; k++)
+            {
+                writerX.append("O"+k+","+X[k-1]+"\n");
+                writerZ1.append("O"+k+","+z1[k-1]+"\n");
+                writerZ2.append("O"+k+","+z2[k-1]+"\n");
+                writerZ3.append("O"+k+","+z3[k-1]+"\n");
+                writerW.append("O"+k+","+w[k-1]+"\n");
+            }
+            writerX.flush();
+            writerX.close();
+            writerW.flush();
+            writerW.close();
+            writerZ1.flush();
+            writerZ1.close();
+            writerZ2.flush();
+            writerZ2.close();
+            writerZ3.flush();
+            writerZ3.close();
 
             //Summary
             FileWriter writerSum = new FileWriter(fileSummary);

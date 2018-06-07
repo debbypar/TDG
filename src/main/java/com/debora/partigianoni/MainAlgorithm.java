@@ -1015,7 +1015,7 @@ public class MainAlgorithm {
             totTime = (totEndTime - totStartTime);
 
             CSVHandler csvHandler = new CSVHandler();
-            csvHandler.writeOnFile("output".concat(folderNumber).concat("/ist").concat(Integer.toString(i)).concat("/"), algorithm.results[minIndex].getX(), algorithm.results[minIndex].getZ1(), algorithm.results[minIndex].getZ2(), algorithm.results[minIndex].getZ3(), algorithm.results[minIndex].getW(), algorithm.results[minIndex].getAdjMatrix().getAdj(), totTime);
+            csvHandler.writeOnFile("output".concat(folderNumber).concat("/ist").concat(Integer.toString(i)).concat("/"), algorithm.results[minIndex].getX(), algorithm.results[minIndex].getZ1(), algorithm.results[minIndex].getZ2(), algorithm.results[minIndex].getZ3(), algorithm.results[minIndex].getW(), algorithm.results[minIndex].getAdjMatrix().getAdj(), totTime, movers[i-2]);
         }
     }
 
