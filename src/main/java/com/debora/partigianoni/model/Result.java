@@ -163,7 +163,7 @@ public class Result {
 
     public Result(int V, int M)
     {
-        this.X = new double[V-M];
+        this.X = new double[V];
         this.adjMatrix = new AdjMatrix(V);
         this.z1 = new int[V-M];
         this.z2 = new int[V-M];

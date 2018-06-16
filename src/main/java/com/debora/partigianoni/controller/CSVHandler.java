@@ -112,13 +112,20 @@ public class CSVHandler {
             writerZ3.append("order,z3\n");
             writerW.append("order,w\n");
 
-            for(int k=1; k<=X.length; k++)
+            int k;
+            int tempMovers = 1;
+            for(k=1; k<=X.length-movers; k++)
             {
                 writerX.append("O"+k+","+X[k-1]+"\n");
                 writerZ1.append("O"+k+","+z1[k-1]+"\n");
                 writerZ2.append("O"+k+","+z2[k-1]+"\n");
                 writerZ3.append("O"+k+","+z3[k-1]+"\n");
                 writerW.append("O"+k+","+w[k-1]+"\n");
+            }
+            for(k=X.length-movers+1; k<= X.length; k++)
+            {
+                writerX.append("M"+tempMovers+","+X[k-1]+"\n");
+                tempMovers++;
             }
             writerX.flush();
             writerX.close();
